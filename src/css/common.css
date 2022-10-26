@@ -54,3 +54,32 @@ body {
     color: var(--main-color);
     border-radius: 10px;
 }
+
+.contents {
+    margin-left: 50px;
+    padding-top: 30px;
+}
+
+.title {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+.buttons button {
+    padding: 2px 5px;
+    font-size: 15px;
+}
+
+#month {
+    border: 1px solid gray;
+    padding: 3px 10px;
+    border-radius: 5px;
+    display: inline;
+    font-size: 15px;
+}
+
+#current_month {
+    margin-left: 10px;
+    font-size: 15px;
+}
