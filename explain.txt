@@ -1,0 +1,35 @@
+웹팩, 패키지json
+public : html
+src/client : tsconfig, store.ts, ts
+src/server : tsconfig, app.ts
+dist : app.js, 
+
+
+-------------------
+루트 실행한 명령어
+npm install typescript --sava-dev
+npm install express
+npm install mysql
+npm i @types/express --save-dev
+npm install webpack webpack-cli --save-dev
+npm install html-webpack-plugin
+npm install ts-loader
+npx webpack // 에러해결중
+
+src/server 실행한 명령어
+npx tsc --init
+
+
+----------------
+1026 근무중 작업 : 이은지
+
+<파일>
+sql파일 추가
+app.ts
+package.json : script 추가 ("start:server": "tsc -p ./src/server/tsconfig.json && node dist/app.js")
+server/tsconfig : outDir변경
+
+<명령어>
+npm i --save-dev @types/mysql
+npm install body-parser
+----------------

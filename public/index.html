@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>내역</title>
+    <link href="../src/css/index.css" rel="stylesheet">
+</head>
+<body>
+    <div class="bar">
+        <img src="../src/img/mainIcon.png">
+        <h2>가계부</h2>
+    </div>
+    <div class="main">
+        <div class="menus">
+            <li class="menu" id="history">내역</li>
+            <li class="menu" id="report">월별 보고서</li>
+        </div>
+        <div class="contents">
+            <div class="title">내역</div>
+            <div class="buttons">
+                <button id="btnPrevious"><</button>
+                <div id="month">2022-10</div>
+                <button id="btnNext">></button>
+                <button id="current_month">이번 달</button>
+            </div>
+            <div class="content">
+                <div class="content_summary">
+                    <div class="category" id="total">
+                        <div>전체 (<span id="cntTotal">0</span>)</div>
+                        <div id="sumTotal"><b>0</b> 원</div>
+                    </div>
+                    <div class="category" id="income">
+                        <div>수입 (<span id="cntIncome">0</span>)</div>
+                        <div id="sumIncome"><b>0</b> 원</div>
+                    </div>
+                    <div class="category" id="expenditure">
+                        <div>지출 (<span id="cntExpenditure">0</span>)</div>
+                        <div id="sumExpenditure"><b>0</b> 원</div>
+                    </div>
+                    <div class="category" id="transfer">
+                        <div>이체 (<span id="cntTransfer">0</span>)</div>
+                        <div id="sumTransfer"><b>0</b> 원</div>
+                    </div>
+                </div>
+                <div class="content_history">
+                    <div class="list">날짜</div>
+                    <div class="list">분류</div>
+                    <div class="list">내용</div>
+                    <div class="list">금액</div>
+                </div>
+            </div>
+        </div>
+        <div id="btnCreate"><span>+</span></div>
+        <div class="modal hidden">
+            <div class="md_overlay"></div>
+            <div class="md_content">
+                <h3>내역 상세</h3>
+                <div>
+                    <button class="md_button" id="md_income">수입</button>
+                    <button class="md_button" id="md_income">지출</button>
+                    <button class="md_button" id="md_income">이체</button>
+                </div>
+                <div>
+                    <div class="md_subcontent">
+                        <span>날짜</span>
+                        <input type="date" id="inputDate">
+                    </div>
+                    <div class="md_subcontent">
+                        <span>시간</span>
+                        <input type="time" id="inputTime">
+                    </div>
+                </div>
+                <div class="md_subcontent">
+                    <span>분류</span>
+                    <select name="category">
+                        <option value="none">=== 선택 ===</option>
+                    </select>
+                </div>
+                <div class="md_subcontent">
+                    <span>금액</span>
+                    <input type="text">
+                </div>
+                <div class="md_subcontent">
+                    <span>내용</span>
+                    <input type="text">
+                </div>
+                <div class="btnClose">
+                    <button class="md_button">저장</button>
+                    <button class="md_button">삭제</button>
+                    <button class="md_button">취소</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="../dist/index.js"></script>
+</body>
+</html>
