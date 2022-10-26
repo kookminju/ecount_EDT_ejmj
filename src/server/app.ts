@@ -13,16 +13,13 @@ const connection = mysql.createConnection({
 connection.connect(); // 언제 해제하지
 
 const app = express();
-app.use(express.static("public"));
+app.use(express.static("dist"));
 app.use(express.json());
 
-app.get("/api/accountBook/:yyyymm", (req, res) => {
-
-    // 현재 월에 해당하는 가계부내역 조회
+app.get("/api/accountBook/:yyyymm?", (req, res) => {
     if(!req.params.yyyymm) {
-        // 기본 가계부 조회
-        // select * from Content where date_format(content_date, '%m') == month(now()); // 맞는지 실행해봐야할듯?
-        connection.query("select * from content", (err, rows) => {
+        const sql: string = "select * from content where date_format(content_date, '%m') = month(now())";
+        connection.query(sql, (err, rows) => {
             if(err) {
                 throw err;
             }
@@ -31,8 +28,11 @@ app.get("/api/accountBook/:yyyymm", (req, res) => {
         return;
     }
     
-    // yyyy년 mm월에 해당하는 가계부내역 조회
-    connection.query("select * from content"/* 쿼리 입력하기 */, (err, rows) => {
+    // yyyy년 mm월 가계부내역 조회
+    const yyyymm: string[] = req.params.yyyymm.split("-");
+
+    const sql: string = "select * from content where date_format(content_date, '%Y') = ? and date_format(content_date, '%m') = ?"
+    connection.query(sql, [yyyymm[0], yyyymm[1]], (err, rows) => {
         if(err) {
             throw err;
         }

@@ -44,5 +44,8 @@ values
 insert into content
 values
 ('test-uuid-01', 1, now(), '10월급여받은거', 3000000),
-('test-uuid-02', 9, now(), '구내식당', 6500)
+('test-uuid-02', 1, now(), '구내식당', 6500),
+('test-uuid-03', 9, date_sub(now(), interval 1 month), '샤브샤브', 12000),
+('test-uuid-04', 12, date_sub(now(), interval 1 month), '택시비', 6000)
 ;
+-- select * from content;
