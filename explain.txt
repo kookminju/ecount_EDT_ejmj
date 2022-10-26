@@ -33,5 +33,3 @@ server/tsconfig : outDir변경
 npm i --save-dev @types/mysql
 npm install body-parser
 ----------------
-
-hi
