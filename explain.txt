@@ -32,6 +32,19 @@ server/tsconfig : outDir변경
 <명령어>
 npm i --save-dev @types/mysql
 npm install body-parser
+
+
+
+loadDefaultContents();
+
+addAccountBookContent({
+    "contentId": "test-post-02",
+    "classificationId": 9,
+    "contentDate": "2022-10-10 13:02:15",
+    "memo": "김치찌개",
+    "amount": 10000
+});
+
 ----------------
 
 hi

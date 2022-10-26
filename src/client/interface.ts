@@ -13,6 +13,4 @@ export interface Classification {
     subType: string;
 }
 
-export interface ContentDetail extends Content, Classification {
-    // 이렇게 해도 되나?
-}
+export interface ContentDetail extends Content, Classification { }

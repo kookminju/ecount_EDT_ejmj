@@ -3,7 +3,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack",
     "start": "webpack serve",
-    "start:server": "tsc -p ./src/server/tsconfig.json && node serverDist/server/app.js"
+    "start:server": "webpack && tsc -p ./src/server/tsconfig.json && node serverDist/server/app.js"
   },
   "dependencies": {
     "body-parser": "^1.20.1",
