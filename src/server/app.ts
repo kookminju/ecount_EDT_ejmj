@@ -1,6 +1,7 @@
 import { Content, Classification } from "../client/interface";
 import express from "express";
 import mysql from "mysql";
+import path from "path";
 import bodyParser from "body-parser";
 
 const PORT:number = 5500;
@@ -15,6 +16,8 @@ connection.connect(); // 언제 해제하지
 const app = express();
 app.use(express.static("dist"));
 app.use(express.json());
+
+app.get("/report", (req, res) => res.sendFile(path.join(__dirname, "../../dist", req.path + ".html")));
 
 app.get("/api/accountBook/:yyyymm?", (req, res) => {
     const baseSql: string = "select ct.*, cf.category, cf.main_type, cf.sub_type from content ct join classification cf on ct.classification_id = cf.classification_id";

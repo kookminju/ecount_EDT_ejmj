@@ -5,7 +5,8 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 module.exports = {
     mode: "none",
     entry: {
-        main: "./src/client/index.ts"
+        main: "./src/client/index.ts",
+        report: "./src/client/report.ts"
     },
     output: {
         filename: "[name].[contenthash].bundle.js",
@@ -35,6 +36,11 @@ module.exports = {
             filename: "index.html",
             template: "./public/index.html",
             chunks: ["main"],
+        }),
+        new HtmlWebpackPlugin({
+            filename: "report.html",
+            template: "./public/report.html",
+            chunks: ["report"],
         }),
     ],
     resolve: {
