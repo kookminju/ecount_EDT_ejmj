@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const mysql_1 = __importDefault(require("mysql"));
+const path_1 = __importDefault(require("path"));
 const PORT = 5500;
 const connection = mysql_1.default.createConnection({
     host: "localhost",
@@ -16,6 +17,7 @@ connection.connect(); // 언제 해제하지
 const app = (0, express_1.default)();
 app.use(express_1.default.static("dist"));
 app.use(express_1.default.json());
+app.get("/report", (req, res) => res.sendFile(path_1.default.join(__dirname, "../../dist", req.path + ".html")));
 app.get("/api/accountBook/:yyyymm?", (req, res) => {
     const baseSql = "select ct.*, cf.category, cf.main_type, cf.sub_type from content ct join classification cf on ct.classification_id = cf.classification_id";
     const orderSql = " order by content_date desc";

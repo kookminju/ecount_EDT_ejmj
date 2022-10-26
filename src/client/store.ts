@@ -41,3 +41,5 @@ export async function loadAllClassifications() {
     const classifications: Classification[] = await response.json();
     return classifications;
 }
+
+
