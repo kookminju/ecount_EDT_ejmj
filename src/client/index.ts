@@ -5,6 +5,8 @@ import { loadContents } from "./store";
 
 const btnPrevious = document.getElementById("btnPrevious") as HTMLButtonElement;
 const btnNext = document.getElementById("btnNext") as HTMLButtonElement;
+const dateEl = document.getElementById("month") as HTMLDivElement;
+const btnCurrent = document.getElementById("current_month") as HTMLButtonElement;
 
 const btnTotal = document.getElementById("total");
 const btnIncome = document.getElementById("income");
@@ -14,20 +16,55 @@ const btnTransfer = document.getElementById("transfer");
 window.addEventListener('DOMContentLoaded', () => {
     const icon = document.getElementById("icon") as HTMLImageElement;
     icon.src = mainIcon;
-    initHistory();
+
+    dateEl.textContent = getDate();
+
+    initHistory(dateEl.textContent);
 });
 
 btnPrevious.addEventListener("click", () => {
-    // 
-})
+    if (dateEl.textContent) {
+        let [year, month]: string[] = dateEl.textContent.split('-');
+        if (month === "1") {
+            dateEl.textContent = (Number(year) - 1) + '-' + 12;
+        } else {
+            dateEl.textContent = year + '-' + (Number(month) - 1);
+        }
+    }
+    initHistory(dateEl.textContent);
+});
+
+btnNext.addEventListener("click", () => {
+    if (dateEl.textContent) {
+        let [year, month]: string[] = dateEl.textContent.split('-');
+        if (month === "12") {
+            dateEl.textContent = (Number(year) + 1) + '-' + 1;
+        } else {
+            dateEl.textContent = year + '-' + (Number(month) + 1);
+        }
+    }
+    initHistory(dateEl.textContent);
+});
+
+btnCurrent.addEventListener("click", () => { 
+    dateEl.textContent = getDate();
+    initHistory(dateEl.textContent);
+});
+
+function getDate(): string {
+    const date = new Date();
+    const year: number = date.getFullYear();
+    const month: string = ('0' + (date.getMonth() + 1)).slice(-2);
+    return year + '-' + month;
+}
 
 // init 내역
-function initHistory() {
-    // 년,월 가져오기
-    const date = document.getElementById("month") as HTMLDivElement;
-    if (date.textContent) {
-        let param: string = date.textContent;
-        // const contents: ContentDetail[] = loadContents(param);
+function initHistory(date: string | null) {
+    if (date) {
+        const contents: Promise<ContentDetail[]> = loadContents(date);
+        // contents.forEach(content => {
+            
+        // });
         
         // <div class="content_history">
         //     <div class="list">날짜</div>
