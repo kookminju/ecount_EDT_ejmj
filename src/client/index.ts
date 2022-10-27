@@ -3,7 +3,7 @@
 import "../css/index.css";
 import mainIcon from "../img/mainIcon.png";
 import { ContentDetail } from "./interface";
-import { getContentById, loadContents } from "./store";
+import { getContentById, loadAllClassifications, loadContents } from "./store";
 
 const btnPrevious = document.getElementById("btnPrevious") as HTMLButtonElement;
 const btnNext = document.getElementById("btnNext") as HTMLButtonElement;
@@ -23,6 +23,16 @@ const cntExpenditure = document.getElementById("cntExpenditure") as HTMLDivEleme
 const sumTotal = document.getElementById("sumTotal") as HTMLSpanElement;
 const sumIncome = document.getElementById("sumIncome") as HTMLSpanElement;
 const sumExpenditure = document.getElementById("sumExpenditure") as HTMLSpanElement;
+
+const modal = document.querySelector(".modal") as HTMLDivElement;
+const mdIncome = document.getElementById("md_income") as HTMLButtonElement;
+const mdExpenditure = document.getElementById("md_expenditure") as HTMLButtonElement;
+const inputDate = document.getElementById("inputDate") as HTMLInputElement;
+const inputTime = document.getElementById("inputTime") as HTMLInputElement;
+const selectbox = document.getElementById("category") as HTMLSelectElement;
+const inputAmount = document.getElementById("inputAmount") as HTMLInputElement;
+const inputMemo = document.getElementById("inputMemo") as HTMLInputElement;
+
 
 let allContents: ContentDetail[];
 let incomeContents: ContentDetail[];
@@ -169,11 +179,35 @@ function createListEl(content: ContentDetail) {
     divEl.append(amountEl);
     
     divEl.addEventListener("click", async() => {
+        openModal();
         let content: ContentDetail;
         if (divEl.dataset.id) {
             content = await getContentById(divEl.dataset.id);
-            const inputDate = document.getElementById("inputDate") as HTMLInputElement;
-            inputDate.value = content.contentDate.split(" ")[0];
+
+            if (content.category == "I") {
+                mdIncome.style.border = "1px solid rgb(227,108,103)";
+                mdIncome.style.color = "rgb(227,108,103)";
+            } else {
+                mdExpenditure.style.border = "1px solid rgb(227,108,103)";
+                mdExpenditure.style.color = "rgb(227,108,103)";
+            }
+
+            const contentDate = content.contentDate.split(" ");
+            inputDate.value = contentDate[0];
+            inputTime.value = contentDate[1];
+
+            const options = await loadAllClassifications();
+            options.forEach((option) => {
+                const optionEl = document.createElement("option") as HTMLOptionElement;
+                optionEl.text = option.subType;
+                optionEl.value = option.classificationId + "";
+                selectbox.append(optionEl);
+            })
+            selectbox.value = content.classificationId + "";
+
+            inputAmount.value = content.amount + "";
+
+            inputMemo.value = content.memo;
         }
     })
 
@@ -207,11 +241,32 @@ function changeNotation(amount: Number) {
 
 // 모달
 const btnCreate = document.getElementById("btnCreate") as HTMLButtonElement;
-btnCreate.addEventListener("click", (e: Event) => {
+const btnSave = document.getElementById("btnSave") as HTMLButtonElement;
+const btnDelete = document.getElementById("btnDelete") as HTMLButtonElement;
+const btnCancel = document.getElementById("btnCancel") as HTMLButtonElement;
+
+btnCreate.addEventListener("click", () => {
     openModal();
 })
 
+btnCancel.addEventListener("click", () => {
+    modal.classList.add("hidden");
+
+})
+
 function openModal() {
-    const modal = document.querySelector(".modal");
-    modal?.classList.remove("hidden");
+    resetModal();
+    modal.classList.remove("hidden");
+}
+
+function resetModal() {
+    mdIncome.style.border = "1px solid rgb(227,108,103)";
+    mdIncome.style.color = "rgb(227,108,103)";
+    mdExpenditure.style.removeProperty("border");
+    mdExpenditure.style.removeProperty("color");
+    inputDate.value = "YYYY-MM";
+    inputTime.value = "hh-mm-ss";
+    selectbox.value = "none";
+    inputAmount.value = "";
+    inputMemo.value = "";
 }

@@ -183,6 +183,7 @@ body {
     width: 80px; height: 30px;
     border: 1px solid var(--border-color);
     color: var(--font-color);
+    background-color: white;
 }
 
 .IE {
