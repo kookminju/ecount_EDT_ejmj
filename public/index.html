@@ -53,8 +53,8 @@
             <div class="md_content">
                 <h3>내역 상세</h3>
                 <div>
-                    <button class="md_button" id="md_income">수입</button>
-                    <button class="md_button" id="md_income">지출</button>
+                    <button class="md_button IE" id="md_income">수입</button>
+                    <button class="md_button IE" id="md_expenditure">지출</button>
                 </div>
                 <div>
                     <div class="md_subcontent">
@@ -68,22 +68,22 @@
                 </div>
                 <div class="md_subcontent">
                     <span>분류</span>
-                    <select name="category">
+                    <select id="category">
                         <option value="none">=== 선택 ===</option>
                     </select>
                 </div>
                 <div class="md_subcontent">
                     <span>금액</span>
-                    <input type="text">
+                    <input type="text" id="inputAmount">
                 </div>
                 <div class="md_subcontent">
                     <span>내용</span>
-                    <input type="text">
+                    <input type="text" id="inputMemo">
                 </div>
                 <div class="btnClose">
-                    <button class="md_button">저장</button>
-                    <button class="md_button">삭제</button>
-                    <button class="md_button">취소</button>
+                    <button class="md_button" id="btnSave">저장</button>
+                    <button class="md_button" id="btnDelete">삭제</button>
+                    <button class="md_button" id="btnCancel">취소</button>
                 </div>
             </div>
         </div>

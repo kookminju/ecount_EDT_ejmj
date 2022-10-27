@@ -3,7 +3,7 @@
 import "../css/index.css";
 import mainIcon from "../img/mainIcon.png";
 import { ContentDetail } from "./interface";
-import { loadContents } from "./store";
+import { getContentById, loadAllClassifications, loadContents } from "./store";
 
 const btnPrevious = document.getElementById("btnPrevious") as HTMLButtonElement;
 const btnNext = document.getElementById("btnNext") as HTMLButtonElement;
@@ -23,6 +23,16 @@ const cntExpenditure = document.getElementById("cntExpenditure") as HTMLDivEleme
 const sumTotal = document.getElementById("sumTotal") as HTMLSpanElement;
 const sumIncome = document.getElementById("sumIncome") as HTMLSpanElement;
 const sumExpenditure = document.getElementById("sumExpenditure") as HTMLSpanElement;
+
+const modal = document.querySelector(".modal") as HTMLDivElement;
+const mdIncome = document.getElementById("md_income") as HTMLButtonElement;
+const mdExpenditure = document.getElementById("md_expenditure") as HTMLButtonElement;
+const inputDate = document.getElementById("inputDate") as HTMLInputElement;
+const inputTime = document.getElementById("inputTime") as HTMLInputElement;
+const selectbox = document.getElementById("category") as HTMLSelectElement;
+const inputAmount = document.getElementById("inputAmount") as HTMLInputElement;
+const inputMemo = document.getElementById("inputMemo") as HTMLInputElement;
+
 
 let allContents: ContentDetail[];
 let incomeContents: ContentDetail[];
@@ -141,6 +151,7 @@ function createEliments(contents: ContentDetail[]) {
 function createListEl(content: ContentDetail) {
     const divEl = document.createElement("div") as HTMLDivElement;
     divEl.className = "content_history";
+    divEl.setAttribute('data-id', content.contentId);
 
     const dateEl = document.createElement("div") as HTMLDivElement;
     dateEl.className = "list"
@@ -167,8 +178,38 @@ function createListEl(content: ContentDetail) {
     }
     divEl.append(amountEl);
     
-    // divEl에 클릭메소드 걸기
-    // 클릭메소드 내부에서 divEl.setAttribute('data-content-id', content.contentId);
+    divEl.addEventListener("click", async() => {
+        openModal();
+        let content: ContentDetail;
+        if (divEl.dataset.id) {
+            content = await getContentById(divEl.dataset.id);
+
+            if (content.category == "I") {
+                mdIncome.style.border = "1px solid rgb(227,108,103)";
+                mdIncome.style.color = "rgb(227,108,103)";
+            } else {
+                mdExpenditure.style.border = "1px solid rgb(227,108,103)";
+                mdExpenditure.style.color = "rgb(227,108,103)";
+            }
+
+            const contentDate = content.contentDate.split(" ");
+            inputDate.value = contentDate[0];
+            inputTime.value = contentDate[1];
+
+            const options = await loadAllClassifications();
+            options.forEach((option) => {
+                const optionEl = document.createElement("option") as HTMLOptionElement;
+                optionEl.text = option.subType;
+                optionEl.value = option.classificationId + "";
+                selectbox.append(optionEl);
+            })
+            selectbox.value = content.classificationId + "";
+
+            inputAmount.value = content.amount + "";
+
+            inputMemo.value = content.memo;
+        }
+    })
 
     contentEl.append(divEl);
 }
@@ -196,4 +237,36 @@ btnExpenditure.addEventListener("click", () => {
 
 function changeNotation(amount: Number) {
     return String(amount).replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
+}
+
+// 모달
+const btnCreate = document.getElementById("btnCreate") as HTMLButtonElement;
+const btnSave = document.getElementById("btnSave") as HTMLButtonElement;
+const btnDelete = document.getElementById("btnDelete") as HTMLButtonElement;
+const btnCancel = document.getElementById("btnCancel") as HTMLButtonElement;
+
+btnCreate.addEventListener("click", () => {
+    openModal();
+})
+
+btnCancel.addEventListener("click", () => {
+    modal.classList.add("hidden");
+
+})
+
+function openModal() {
+    resetModal();
+    modal.classList.remove("hidden");
+}
+
+function resetModal() {
+    mdIncome.style.border = "1px solid rgb(227,108,103)";
+    mdIncome.style.color = "rgb(227,108,103)";
+    mdExpenditure.style.removeProperty("border");
+    mdExpenditure.style.removeProperty("color");
+    inputDate.value = "YYYY-MM";
+    inputTime.value = "hh-mm-ss";
+    selectbox.value = "none";
+    inputAmount.value = "";
+    inputMemo.value = "";
 }
