@@ -3,7 +3,7 @@
 import "../css/index.css";
 import mainIcon from "../img/mainIcon.png";
 import { ContentDetail } from "./interface";
-import { loadContents } from "./store";
+import { getContentById, loadContents } from "./store";
 
 const btnPrevious = document.getElementById("btnPrevious") as HTMLButtonElement;
 const btnNext = document.getElementById("btnNext") as HTMLButtonElement;
@@ -141,6 +141,7 @@ function createEliments(contents: ContentDetail[]) {
 function createListEl(content: ContentDetail) {
     const divEl = document.createElement("div") as HTMLDivElement;
     divEl.className = "content_history";
+    divEl.setAttribute('data-id', content.contentId);
 
     const dateEl = document.createElement("div") as HTMLDivElement;
     dateEl.className = "list"
@@ -167,8 +168,14 @@ function createListEl(content: ContentDetail) {
     }
     divEl.append(amountEl);
     
-    // divEl에 클릭메소드 걸기
-    // 클릭메소드 내부에서 divEl.setAttribute('data-content-id', content.contentId);
+    divEl.addEventListener("click", async() => {
+        let content: ContentDetail;
+        if (divEl.dataset.id) {
+            content = await getContentById(divEl.dataset.id);
+            const inputDate = document.getElementById("inputDate") as HTMLInputElement;
+            inputDate.value = content.contentDate.split(" ")[0];
+        }
+    })
 
     contentEl.append(divEl);
 }
