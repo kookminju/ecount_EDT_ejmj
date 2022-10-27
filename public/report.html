@@ -20,7 +20,7 @@
             <div class="title">월별 보고서</div>
             <div class="buttons">
                 <button id="btnPrevious"><</button>
-                <div id="month">2022-10</div>
+                <div id="month"></div>
                 <button id="btnNext">></button>
                 <button id="current_month">이번 달</button>
             </div>
@@ -28,26 +28,23 @@
             <div class="report-wrapper">
                 <table id="money-out-tbl">
                     <thead class="main-summary">
-                        <!-- 
-                            <tr>
-                                <th class="col-title">총비용</th>
-                                <th class="col-amount">얼마얼마</th>
-                                <th class="col-percent">100%</th>
-                            </tr>
-                         -->
+                        <tr>
+                            <th class="col-title">총 지출</th>
+                            <th class="col-amount">0</th>
+                            <th class="col-percent">100%</th>
+                        </tr>
                     </thead>
-                    <tbody class="record-list">
-                        <tr class="main-type-record">
-                            <td class="col-title">유동생활비</td>
-                            <td class="col-amount">100000</td>
-                            <td class="col-percent">60%</td>
+                    <tbody class="record-list"></tbody>
+                </table>
+                <table id="money-in-tbl">
+                    <thead class="main-summary">
+                        <tr>
+                            <th class="col-title">총 수입</th>
+                            <th class="col-amount">0</th>
+                            <th class="col-percent">100%</th>
                         </tr>
-                        <tr class="sub-type-record">
-                            <td class="col-title">주거통신</td>
-                            <td class="col-amount">5500</td>
-                            <td class="col-percent">5%</td>
-                        </tr>
-                    </tbody>
+                    </thead>
+                    <tbody class="record-list"></tbody>
                 </table>
             </div>
         </div>

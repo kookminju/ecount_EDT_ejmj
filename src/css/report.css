@@ -1,3 +1,48 @@
 .report-wrapper {
+    display: flex;
+    align-items: flex-start;
+    padding: 10px 0;
+}
 
+.report-wrapper table {
+    margin: 10px;
+    width: 400px;
+    border-collapse: collapse;
+    border-radius: 10px;
+    background-color: #fff;
+}
+
+.report-wrapper thead {
+    text-align: left;
+    border-bottom: 1px solid rgb(248 175 21);
+    height: 40px;
+    vertical-align: bottom;
+}
+
+td, th {
+    padding: 8px 15px;
+}
+
+.report-wrapper .col-amount, .report-wrapper .col-percent {
+    text-align: right;
+}
+
+#money-out-tbl .col-amount {
+    color: rgb(217, 37, 73);
+}
+
+#money-in-tbl .col-amount {
+    color: rgb(88, 138, 214);;
+}
+
+tbody {
+    font-size: 14px;
+}
+
+.main-type-record {
+    font-weight: bold;
+}
+
+.sub-type-record .col-title {
+    padding-left: 50px;
 }

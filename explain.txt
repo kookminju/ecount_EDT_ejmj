@@ -22,5 +22,6 @@ src/server 실행한 명령어
 npx tsc --init
 
 ----------------
-
+EJ 할일
+1. app.ts ContentDetail datetime 형식 변환해서 저장하기
 ----------------
