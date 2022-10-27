@@ -9,6 +9,7 @@ export const btnCurrent = document.getElementById("current_month") as HTMLButton
 document.addEventListener('DOMContentLoaded', () => {
     const icon = document.getElementById("icon") as HTMLImageElement;
     icon.src = mainIcon;
+    dateEl.textContent = getDate();
     calendarClick();
 });
 
@@ -16,10 +17,10 @@ function calendarClick() {
     btnPrevious.addEventListener("click", () => {
         if (dateEl.textContent) {
             let [year, month]: string[] = dateEl.textContent.split('-');
-            if (month === "1") {
+            if (month === "01") {
                 dateEl.textContent = (Number(year) - 1) + '-' + 12;
             } else {
-                dateEl.textContent = year + '-' + (Number(month) - 1);
+                dateEl.textContent = year + '-' + ('0' + (Number(month) - 1)).slice(-2);
             }
         }
     });
@@ -28,9 +29,9 @@ function calendarClick() {
         if (dateEl.textContent) {
             let [year, month]: string[] = dateEl.textContent.split('-');
             if (month === "12") {
-                dateEl.textContent = (Number(year) + 1) + '-' + 1;
+                dateEl.textContent = (Number(year) + 1) + '-01';
             } else {
-                dateEl.textContent = year + '-' + (Number(month) + 1);
+                dateEl.textContent = year + '-' + ('0' + (Number(month) + 1)).slice(-2);
             }
         }
     });
