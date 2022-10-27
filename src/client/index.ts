@@ -197,3 +197,14 @@ btnExpenditure.addEventListener("click", () => {
 function changeNotation(amount: Number) {
     return String(amount).replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
 }
+
+// 모달
+const btnCreate = document.getElementById("btnCreate") as HTMLButtonElement;
+btnCreate.addEventListener("click", (e: Event) => {
+    openModal();
+})
+
+function openModal() {
+    const modal = document.querySelector(".modal");
+    modal?.classList.remove("hidden");
+}

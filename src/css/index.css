@@ -162,12 +162,17 @@ body {
 .md_content {
     width: 250px;
     position: relative;
-    padding: 30px 50px;
+    padding: 50px 50px;
     background-color: white;
     text-align: center;
     border-radius: 6px;
     box-shadow: 0 10px 20px rgba(0,0,0,0.20), 0 6px 6px rgba(0, 0, 0, 0.20);
 }
+
+.md_content h3 {
+    margin-top: 0;
+}
+
 .md_content div {
     margin-bottom: 10px;
     display: flex;
@@ -178,6 +183,10 @@ body {
     width: 80px; height: 30px;
     border: 1px solid var(--border-color);
     color: var(--font-color);
+}
+
+.IE {
+    width: 120px;
 }
 
 .md_subcontent {
