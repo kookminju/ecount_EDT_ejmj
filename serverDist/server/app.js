@@ -18,16 +18,49 @@ const app = (0, express_1.default)();
 app.use(express_1.default.static("dist"));
 app.use(express_1.default.json());
 app.get("/report", (req, res) => res.sendFile(path_1.default.join(__dirname, "../../dist", req.path + ".html")));
+app.get("/api/contentDetail/:contentId", (req, res) => {
+    if (!req.params.contentId) {
+        res.sendStatus(400);
+        return;
+    }
+    const contentId = req.params.contentId;
+    const sql = "select ct.*, cf.category, cf.main_type, cf.sub_type from content ct join classification cf on ct.classification_id = cf.classification_id where content_id = ?";
+    connection.query(sql, [contentId], (err, rows) => {
+        if (err) {
+            throw err;
+        }
+        const row = rows[0];
+        console.log(row);
+        // const contentDetail: ContentDetail = {
+        //     rows
+        // }
+        res.send(row);
+    });
+});
 app.get("/api/accountBook/:yyyymm?", (req, res) => {
-    const baseSql = "select ct.*, cf.category, cf.main_type, cf.sub_type from content ct join classification cf on ct.classification_id = cf.classification_id";
+    const baseSql = "select ct.*, cf.category, cf.main_type, cf.sub_type from content ct join classification cf on ct.classification_id = cf.classification_id ";
     const orderSql = " order by content_date desc";
+    let resultArr = [];
     if (!req.params.yyyymm) {
         const whereSql = " where date_format(content_date, '%m') = month(now())";
         connection.query(baseSql + whereSql + orderSql, (err, rows) => {
             if (err) {
                 throw err;
             }
-            res.send(rows);
+            rows.forEach((row) => {
+                const detail = {
+                    contentId: row["content_id"],
+                    classificationId: row["classification_id"],
+                    contentDate: row["content_date"],
+                    memo: row["memo"],
+                    amount: row["amount"],
+                    category: row["category"],
+                    mainType: row["main_type"],
+                    subType: row["sub_type"],
+                };
+                resultArr.push(detail);
+            });
+            res.send(resultArr);
         });
         return;
     }
@@ -38,7 +71,20 @@ app.get("/api/accountBook/:yyyymm?", (req, res) => {
         if (err) {
             throw err;
         }
-        res.send(rows);
+        rows.forEach((row) => {
+            const detail = {
+                contentId: row["content_id"],
+                classificationId: row["classification_id"],
+                contentDate: row["content_date"],
+                memo: row["memo"],
+                amount: row["amount"],
+                category: row["category"],
+                mainType: row["main_type"],
+                subType: row["sub_type"],
+            };
+            resultArr.push(detail);
+        });
+        res.send(resultArr);
     });
 });
 app.post("/api/accountBook", (req, res) => {
@@ -98,7 +144,60 @@ app.get("/api/classification", (req, res) => {
         if (err) {
             throw err;
         }
-        res.send(rows);
+        let resultArr = [];
+        rows.forEach((row) => {
+            const classification = {
+                classificationId: row["classification_id"],
+                category: row["category"],
+                mainType: row["main_type"],
+                subType: row["sub_type"],
+            };
+            resultArr.push(classification);
+        });
+        res.send(resultArr);
+    });
+});
+app.get("/api/report/:yyyymm?", (req, res) => {
+    const baseSql = "select cf.*, sum(amount) as amount_sum from classification cf join content c on cf.classification_id = c.classification_id ";
+    const tailSql = " group by cf.classification_id order by category, main_type, sub_type";
+    let resultArr = [];
+    if (!req.params.yyyymm) {
+        const middleSql = " where date_format(content_date, '%m') = month(now())";
+        connection.query(baseSql + middleSql + tailSql, (err, rows) => {
+            if (err) {
+                throw err;
+            }
+            rows.forEach((row) => {
+                const record = {
+                    classificationId: row["classification_id"],
+                    category: row["category"],
+                    mainType: row["main_type"],
+                    subType: row["sub_type"],
+                    amountSum: row["amount_sum"],
+                };
+                resultArr.push(record);
+            });
+            res.send(resultArr);
+        });
+        return;
+    }
+    const yyyymm = req.params.yyyymm.split("-");
+    const middleSql = " where date_format(content_date, '%Y') = ? and date_format(content_date, '%m') = ?";
+    connection.query(baseSql + middleSql + tailSql, (err, rows) => {
+        if (err) {
+            throw err;
+        }
+        rows.forEach((row) => {
+            const record = {
+                classificationId: row["classification_id"],
+                category: row["category"],
+                mainType: row["main_type"],
+                subType: row["sub_type"],
+                amountSum: row["amount_sum"],
+            };
+            resultArr.push(record);
+        });
+        res.send(resultArr);
     });
 });
 app.listen(PORT, () => {

@@ -14,3 +14,7 @@ export interface Classification {
 }
 
 export interface ContentDetail extends Content, Classification { }
+
+export interface Record extends Classification{
+    amountSum: number;
+}

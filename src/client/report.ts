@@ -1,8 +1,13 @@
-import "../css/common.css";
 import "../css/report.css";
-import mainIcon from "../img/mainIcon.png";
+import { Classification, ContentDetail } from "./interface";
+import { loadAllClassifications, loadContents } from "./store";
+// import { btnCurrent, btnNext, btnPrevious, dateEl} from "./common";
 
 document.addEventListener('DOMContentLoaded', () => {
-    const icon = document.getElementById("icon") as HTMLImageElement;
-    icon.src = mainIcon;
+
 });
+
+async function initReport() {
+    const classifications: Classification[] = await loadAllClassifications();
+    const contents: ContentDetail[] = await loadContents();
+}
