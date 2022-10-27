@@ -44,7 +44,7 @@ app.get("/api/contentDetail/:contentId", (req, res) => {
     });
 });
 app.get("/api/accountBook/:yyyymm?", (req, res) => {
-    const baseSql = "select ct.*, cf.category, cf.main_type, cf.sub_type from content ct join classification cf on ct.classification_id = cf.classification_id ";
+    const baseSql = "select ct.content_id, ct.classification_id, ct.memo, ct.amount, DATE_FORMAT(ct.content_date, '%Y-%m-%d %H:%i:%s') as content_date, cf.category, cf.main_type, cf.sub_type from content ct join classification cf on ct.classification_id = cf.classification_id ";
     const orderSql = " order by content_date desc";
     let resultArr = [];
     if (!req.params.yyyymm) {
