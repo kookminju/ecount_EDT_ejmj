@@ -50,3 +50,39 @@ values
 ;
 -- select * from content;
 
+
+
+
+select o.*, input
+from
+	(
+		select date_format(content_date, "%Y-%m-%d") as "yyyymmdd", sum(amount) output
+		from classification cf join content c on cf.classification_id = c.classification_id 
+		where category = "O" and date_format(content_date, "%Y-%m") = ?
+		group by date_format(content_date, "%Y-%m-%d")
+	) o
+    left join
+	(
+		select date_format(content_date, "%Y-%m-%d") as "yyyymmdd", sum(amount) input
+		from classification cf join content c on cf.classification_id = c.classification_id 
+		where category = "I" and date_format(content_date, "%Y-%m") = ?
+		group by date_format(content_date, "%Y-%m-%d")
+	) i
+    on o.yyyymmdd = i.yyyymmdd
+union
+select o.*, 수입
+from
+	(
+		select date_format(content_date, "%Y-%m-%d") as "yyyymmdd", sum(amount) output
+		from classification cf join content c on cf.classification_id = c.classification_id 
+		where category = "O" and date_format(content_date, "%Y-%m") = ?
+		group by date_format(content_date, "%Y-%m-%d")
+	) o
+	right join
+	(
+		select date_format(content_date, "%Y-%m-%d") as "yyyymmdd", sum(amount) input
+		from classification cf join content c on cf.classification_id = c.classification_id 
+		where category = "I" and date_format(content_date, "%Y-%m") = ?
+		group by date_format(content_date, "%Y-%m-%d")
+	) i
+    on o.yyyymmdd = i.yyyymmdd

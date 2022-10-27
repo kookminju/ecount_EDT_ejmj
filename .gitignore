@@ -170,3 +170,6 @@ $RECYCLE.BIN/
 .DS_Store
 
 # End of https://www.toptal.com/developers/gitignore/api/windows,node
+
+# Custom
+*.js.map
