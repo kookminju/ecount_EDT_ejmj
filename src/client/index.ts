@@ -1,3 +1,5 @@
+// common.ts랑 합치고 중복 코드 리팩토링하기 (webpack.config.js)
+
 import "../css/index.css";
 import mainIcon from "../img/mainIcon.png";
 import { ContentDetail } from "./interface";
@@ -14,42 +16,89 @@ const btnExpenditure = document.getElementById("expenditure") as HTMLDivElement;
 
 const contentEl = document.querySelector(".content") as HTMLDivElement;
 
-window.addEventListener('DOMContentLoaded', () => {
+const cntTotal = document.getElementById("cntTotal") as HTMLDivElement;
+const cntIncome = document.getElementById("cntIncome") as HTMLDivElement;
+const cntExpenditure = document.getElementById("cntExpenditure") as HTMLDivElement;
+
+const sumTotal = document.getElementById("sumTotal") as HTMLSpanElement;
+const sumIncome = document.getElementById("sumIncome") as HTMLSpanElement;
+const sumExpenditure = document.getElementById("sumExpenditure") as HTMLSpanElement;
+
+let allContents: ContentDetail[];
+let incomeContents: ContentDetail[];
+let expenditureContents: ContentDetail[];
+
+let date: string = "";
+
+window.addEventListener('DOMContentLoaded', async () => {
     const icon = document.getElementById("icon") as HTMLImageElement;
     icon.src = mainIcon;
+    btnTotal.style.borderBottom = "3px solid rgb(227,108,103)";
 
     dateEl.textContent = getDate();
+    date = dateEl.textContent;
 
-    initHistory(dateEl.textContent, "A");
+    allContents = await loadContents(date);
+    incomeContents = allContents.filter(content => content.category === "I");
+    expenditureContents = allContents.filter(content => content.category === "O");
+
+    summarizeContents();
+    createEliments(allContents);
 });
 
-btnPrevious.addEventListener("click", () => {
-    if (dateEl.textContent) {
-        let [year, month]: string[] = dateEl.textContent.split('-');
-        if (month === "1") {
-            dateEl.textContent = (Number(year) - 1) + '-' + 12;
-        } else {
-            dateEl.textContent = year + '-' + ('0' + (Number(month) - 1)).slice(-2);
-        }
-        initHistory(dateEl.textContent, "A");
+
+btnPrevious.addEventListener("click", async() => {
+    btnIncome.style.removeProperty("border-bottom");
+    btnExpenditure.style.removeProperty("border-bottom");
+    btnTotal.style.borderBottom = "3px solid rgb(227,108,103)";
+
+    let [year, month]: string[] = date.split('-');
+    if (month === "01") {
+        date = (Number(year) - 1) + '-12';
+    } else {
+        date = year + '-' + ('0' + (Number(month) - 1)).slice(-2);
     }
+    dateEl.textContent = date;
+
+    allContents = await loadContents(date);
+    incomeContents = allContents.filter(content => content.category === "I");
+    expenditureContents = allContents.filter(content => content.category === "O");
+
+    summarizeContents();
+    createEliments(allContents);
 });
 
-btnNext.addEventListener("click", () => {
-    if (dateEl.textContent) {
-        let [year, month]: string[] = dateEl.textContent.split('-');
-        if (month === "12") {
-            dateEl.textContent = (Number(year) + 1) + '-' + 1;
-        } else {
-            dateEl.textContent = year + '-' + ('0' + (Number(month) + 1)).slice(-2);
-        }
-        initHistory(dateEl.textContent, "A");
+btnNext.addEventListener("click", async() => {
+    btnIncome.style.removeProperty("border-bottom");
+    btnExpenditure.style.removeProperty("border-bottom");
+    btnTotal.style.borderBottom = "3px solid rgb(227,108,103)";
+
+    let [year, month]: string[] = date.split('-');
+    if (month === "12") {
+        date = (Number(year) + 1) + '-01';
+    } else {
+        date = year + '-' + ('0' + (Number(month) + 1)).slice(-2);
     }
+    dateEl.textContent = date;
+
+    allContents = await loadContents(date);
+    incomeContents = allContents.filter(content => content.category === "I");
+    expenditureContents = allContents.filter(content => content.category === "O");
+
+    summarizeContents();
+    createEliments(allContents);
 });
 
-btnCurrent.addEventListener("click", () => { 
-    dateEl.textContent = getDate();
-    initHistory(dateEl.textContent, "A");
+btnCurrent.addEventListener("click", async() => { 
+    date = getDate();
+    dateEl.textContent = date;
+
+    allContents = await loadContents(date);
+    incomeContents = allContents.filter(content => content.category === "I");
+    expenditureContents = allContents.filter(content => content.category === "O");
+
+    summarizeContents();
+    createEliments(allContents);
 });
 
 function getDate(): string {
@@ -59,19 +108,27 @@ function getDate(): string {
     return year + '-' + month;
 }
 
-// init 내역
-async function initHistory(date: string, category: string) {
-    // if btnTotal 누르면 contents에 모든 contents를 포함
-    let contents: ContentDetail[];
-    if (category === "A"){
-        contents = await getHistory(date);
-        initSummaryStyle();
-    } else if (category === "I") {  // 수입만 뽑아서 contents에
-        contents = await (await getHistory(date)).filter(content => content.category === "I")
-    } else {  // 지출만 뽑아서 contents에
-        contents = await (await getHistory(date)).filter(content => content.category === "O")
-    }
+function summarizeContents() {
+    cntTotal.textContent = allContents.length + "";
+    cntIncome.textContent = incomeContents.length + "";
+    cntExpenditure.textContent = expenditureContents.length + "";
 
+    let [sumTo, sumIn, sumEx] = [0, 0, 0];
+    allContents.forEach((content) => {
+        if (content.category === "I") {
+            sumIn += content.amount;
+        } else {
+            sumEx += content.amount;
+        }
+    })
+    sumTo = sumIn - sumEx;
+
+    sumTotal.textContent = changeNotation(sumTo) + "원";
+    sumIncome.textContent = changeNotation(sumIn) + "원";
+    sumExpenditure.textContent = changeNotation(sumEx) + "원";
+}
+
+function createEliments(contents: ContentDetail[]) {
     document.querySelectorAll(".content_history").forEach(el => {
         if (!el.classList.contains("li_title")) { el.remove(); }
     });
@@ -79,18 +136,6 @@ async function initHistory(date: string, category: string) {
     contents.forEach(content => {
         createListEl(content);
     });
-}
-
-// 초기화면이거나 month 이동시 summary style reset
-function initSummaryStyle() {
-    btnIncome.style.removeProperty("border-bottom");
-    btnExpenditure.style.removeProperty("border-bottom");
-    btnTotal.style.borderBottom = "3px solid rgb(227,108,103)";
-}
-
-async function getHistory(date: string) {
-    const contents: ContentDetail[] = await loadContents(date);
-    return contents;
 }
 
 function createListEl(content: ContentDetail) {
@@ -128,45 +173,27 @@ function createListEl(content: ContentDetail) {
     contentEl.append(divEl);
 }
 
-function changeNotation(amount: Number) {
-    return String(amount).replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
-}
-
-// 조회 버튼 클릭시
 btnTotal.addEventListener("click", () => {
-    if (dateEl.textContent) {
-        initHistory(dateEl.textContent, "A");
-        btnIncome.style.removeProperty("border-bottom");
-        btnExpenditure.style.removeProperty("border-bottom");
-        btnTotal.style.borderBottom = "3px solid rgb(227,108,103)";
-    }
-})
+    createEliments(allContents);
+    btnIncome.style.removeProperty("border-bottom");
+    btnExpenditure.style.removeProperty("border-bottom");
+    btnTotal.style.borderBottom = "3px solid rgb(227,108,103)";
+});
 
 btnIncome.addEventListener("click", () => {
-    if (dateEl.textContent) {
-        initHistory(dateEl.textContent, "I");
-        btnTotal.style.removeProperty("border-bottom");
-        btnExpenditure.style.removeProperty("border-bottom");
-        btnIncome.style.borderBottom = "3px solid rgb(227,108,103)";
-    }
-})
+    createEliments(incomeContents);
+    btnTotal.style.removeProperty("border-bottom");
+    btnExpenditure.style.removeProperty("border-bottom");
+    btnIncome.style.borderBottom = "3px solid rgb(227,108,103)";
+});
 
 btnExpenditure.addEventListener("click", () => {
-    if (dateEl.textContent) {
-        initHistory(dateEl.textContent, "O");
-        btnTotal.style.removeProperty("border-bottom");
-        btnIncome.style.removeProperty("border-bottom");
-        btnExpenditure.style.borderBottom = "3px solid rgb(227,108,103)";
-    }
-})
+    createEliments(expenditureContents);
+    btnTotal.style.removeProperty("border-bottom");
+    btnIncome.style.removeProperty("border-bottom");
+    btnExpenditure.style.borderBottom = "3px solid rgb(227,108,103)";
+});
 
-// 모달
-const btnCreate = document.getElementById("btnCreate") as HTMLButtonElement;
-btnCreate.addEventListener("click", (e: Event) => {
-    openModal();
-})
-
-function openModal() {
-    const modal = document.querySelector(".modal");
-    modal?.classList.remove("hidden");
+function changeNotation(amount: Number) {
+    return String(amount).replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
 }
