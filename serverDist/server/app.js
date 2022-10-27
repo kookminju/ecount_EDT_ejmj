@@ -30,11 +30,17 @@ app.get("/api/contentDetail/:contentId", (req, res) => {
             throw err;
         }
         const row = rows[0];
-        console.log(row);
-        // const contentDetail: ContentDetail = {
-        //     rows
-        // }
-        res.send(row);
+        const detail = {
+            contentId: row["content_id"],
+            classificationId: row["classification_id"],
+            contentDate: row["content_date"],
+            memo: row["memo"],
+            amount: row["amount"],
+            category: row["category"],
+            mainType: row["main_type"],
+            subType: row["sub_type"],
+        };
+        res.send(detail);
     });
 });
 app.get("/api/accountBook/:yyyymm?", (req, res) => {
@@ -158,8 +164,8 @@ app.get("/api/classification", (req, res) => {
     });
 });
 app.get("/api/report/:yyyymm?", (req, res) => {
-    const baseSql = "select cf.*, sum(amount) as amount_sum from classification cf join content c on cf.classification_id = c.classification_id ";
-    const tailSql = " group by cf.classification_id order by category, main_type, sub_type";
+    const baseSql = "select c.*, amount_sum from classification c left join (select cf.*, sum(amount) as amount_sum from classification cf join content c on cf.classification_id = c.classification_id ";
+    const tailSql = " group by cf.sub_type) summary_cf on c.classification_id = summary_cf.classification_id order by category, main_type, sub_type ";
     let resultArr = [];
     if (!req.params.yyyymm) {
         const middleSql = " where date_format(content_date, '%m') = month(now())";
@@ -203,3 +209,4 @@ app.get("/api/report/:yyyymm?", (req, res) => {
 app.listen(PORT, () => {
     console.log("listening on " + PORT);
 });
+//# sourceMappingURL=app.js.map

@@ -51,5 +51,17 @@ values
 -- select * from content;
 
 
+select c.*, amount_sum
+from classification c left join
+	(
+		select cf.*, sum(amount) as amount_sum from classification cf join content c on cf.classification_id = c.classification_id 
+		group by cf.sub_type
+    ) summary_cf
+    on c.classification_id = summary_cf.classification_id
+order by category, main_type, sub_type
+;
 
-select ct.*, cf.category, cf.main_type, cf.sub_type from content ct join classification cf on ct.classification_id = cf.classification_id
+select cf.*, sum(amount) as amount_sum from classification cf join content c on cf.classification_id = c.classification_id 
+where date_format(content_date, '%m') = month(now())
+group by cf.classification_id order by category, main_type, sub_type
+

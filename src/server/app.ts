@@ -186,8 +186,8 @@ app.get("/api/classification", (req, res) => {
 });
 
 app.get("/api/report/:yyyymm?", (req, res) => {
-    const baseSql: string = "select cf.*, sum(amount) as amount_sum from classification cf join content c on cf.classification_id = c.classification_id ";
-    const tailSql: string = " group by cf.classification_id order by category, main_type, sub_type"
+    const baseSql: string = "select c.*, amount_sum from classification c left join (select cf.*, sum(amount) as amount_sum from classification cf join content c on cf.classification_id = c.classification_id ";
+    const tailSql: string = " group by cf.sub_type) summary_cf on c.classification_id = summary_cf.classification_id order by category, main_type, sub_type "
     let resultArr: Record[] = [];
 
     if(!req.params.yyyymm) {
