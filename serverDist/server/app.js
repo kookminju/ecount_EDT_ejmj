@@ -20,7 +20,7 @@ exports.app.get("/api/contentDetail/:contentId", (req, res) => {
     }
     try {
         const contentId = req.params.contentId;
-        const sql = "select ct.*, cf.category, cf.main_type, cf.sub_type from content ct join classification cf on ct.classification_id = cf.classification_id where content_id = ?";
+        const sql = "select ct.content_id, ct.classification_id, ct.memo, ct.amount, DATE_FORMAT(ct.content_date, '%Y-%m-%d %H:%i:%s') as content_date, cf.category, cf.main_type, cf.sub_type from content ct join classification cf on ct.classification_id = cf.classification_id where content_id = ?";
         dbConnection_1.connection.query(sql, [contentId], (err, rows) => {
             if (err) {
                 throw err;
@@ -178,7 +178,7 @@ exports.app.get("/api/classification", (req, res) => {
 });
 exports.app.get("/api/report/:yyyymm?", (req, res) => {
     try {
-        const baseSql = "select select ct.content_id, ct.classification_id, ct.memo, ct.amount, DATE_FORMAT(ct.content_date, '%Y-%m-%d %H:%i:%s') as content_date, amount_sum from classification c left join (select cf.*, sum(amount) as amount_sum from classification cf join content c on cf.classification_id = c.classification_id ";
+        const baseSql = "select c.*, amount_sum from classification c left join (select cf.*, sum(amount) as amount_sum from classification cf join content c on cf.classification_id = c.classification_id ";
         const tailSql = " group by cf.sub_type) summary_cf on c.classification_id = summary_cf.classification_id order by category, main_type, sub_type ";
         let resultArr = [];
         if (!req.params.yyyymm) {
