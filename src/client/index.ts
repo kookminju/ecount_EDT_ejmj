@@ -37,12 +37,9 @@ let expenditureContents: ContentDetail[];
 let date: string = "";
 
 window.addEventListener('DOMContentLoaded', async () => {
-    const icon = document.getElementById("icon") as HTMLImageElement;
-    icon.src = mainIcon; 
     btnTotal.style.borderBottom = "3px solid rgb(227,108,103)";
 
-    dateEl.textContent = getDate();
-    date = dateEl.textContent;
+    date = dateEl.textContent ?? "";
 
     allContents = await loadContents(date);
     incomeContents = allContents.filter(content => content.category === "I");
@@ -148,7 +145,7 @@ function createListEl(content: ContentDetail) {
 
     const dateEl = document.createElement("div") as HTMLDivElement;
     dateEl.className = "list"
-    dateEl.textContent = content.contentDate;
+    dateEl.textContent = content.contentDate.slice(0, -3);
     divEl.append(dateEl)
 
     const categoryEl = document.createElement("div") as HTMLDivElement;
@@ -179,7 +176,7 @@ function createListEl(content: ContentDetail) {
             openModal(content);
             initModalButton(content);
 
-            mdIncome.addEventListener("click", () => {
+            mdIncome.onclick = () => {
                 content.category = "I";
                 setSelectOption("I");
 
@@ -187,9 +184,9 @@ function createListEl(content: ContentDetail) {
                 mdIncome.style.color = "rgb(227,108,103)";
                 mdExpenditure.style.removeProperty("border");
                 mdExpenditure.style.removeProperty("color");
-            })
+            }
 
-            mdExpenditure.addEventListener("click", () => {
+            mdExpenditure.onclick = () => {
                 content.category = "O";
                 setSelectOption("O");
 
@@ -197,7 +194,7 @@ function createListEl(content: ContentDetail) {
                 mdExpenditure.style.color = "rgb(227,108,103)";
                 mdIncome.style.removeProperty("border");
                 mdIncome.style.removeProperty("color");
-            })
+            }
 
             if (content.category == "I") {
                 mdIncome.style.border = "1px solid rgb(227,108,103)";
@@ -215,14 +212,16 @@ function createListEl(content: ContentDetail) {
             inputDate.value = contentDate[0];
             inputTime.value = contentDate[1];
 
-            selectbox.value = content.classificationId + "";
-
             inputAmount.value = content.amount + "";
 
             inputMemo.value = content.memo;
 
             // put content
             btnSave.onclick = () => {
+                if (selectbox.value == "none" || !inputDate.value || !inputTime.value || !inputMemo.value || !inputAmount.value) {
+                    alert("input값을 모두 채워주세요 !")
+                    return;
+                }
                 // value로 새로 변경할 content를 채우자
                 const newContent: Content = {
                     contentId: content.contentId,
@@ -243,6 +242,10 @@ function createListEl(content: ContentDetail) {
                 modal.classList.add("hidden");
                 refreshContents(date);
             }
+
+            btnCancel.onclick = () => {
+                modal.classList.add("hidden");
+            };
         }
     })
 
@@ -294,9 +297,27 @@ const btnCancel = document.getElementById("btnCancel") as HTMLButtonElement;
 btnCreate.addEventListener("click", () => {
     openModal();
 
+    mdIncome.onclick = () => {
+        setSelectOption("I");
+
+        mdIncome.style.border = "1px solid rgb(227,108,103)";
+        mdIncome.style.color = "rgb(227,108,103)";
+        mdExpenditure.style.removeProperty("border");
+        mdExpenditure.style.removeProperty("color");
+    }
+
+    mdExpenditure.onclick = () => {
+        setSelectOption("O");
+
+        mdExpenditure.style.border = "1px solid rgb(227,108,103)";
+        mdExpenditure.style.color = "rgb(227,108,103)";
+        mdIncome.style.removeProperty("border");
+        mdIncome.style.removeProperty("color");
+    }
+
     // post content
     btnSave.onclick = () => {
-        if (!selectbox.value || !inputDate.value || !inputTime.value || !inputMemo.value || !inputAmount.value) {
+        if (selectbox.value == "none"  || !inputDate.value || !inputTime.value || !inputMemo.value || !inputAmount.value) {
             alert("input값을 모두 채워주세요 !")
             return;
         }
@@ -315,16 +336,21 @@ btnCreate.addEventListener("click", () => {
     btnDelete.onclick = () => {
         alert("삭제할 항목을 클릭해주세요");
     }
+
+    btnCancel.onclick = () => {
+        modal.classList.add("hidden");
+    };
 })
 
 function openModal(content?: ContentDetail) {
+    resetModal();
+
     if (content) {
-        setSelectOption(content.category);
+        setSelectOption(content.category, content.subType);
     } else {
         setSelectOption();
     }
-    
-    resetModal();
+
     modal.classList.remove("hidden");
 }
 
@@ -343,7 +369,7 @@ async function resetModal() {
 }
 
 // 모달 열때 (+버튼, 각 divEl 버튼 클릭 시)
-async function setSelectOption(category?: string) {
+async function setSelectOption(category?: string, subType?: string) {
     document.querySelectorAll(".option").forEach(el => {
         if (!el.classList.contains("option_title")) { el.remove(); }
     });
@@ -353,6 +379,9 @@ async function setSelectOption(category?: string) {
             const optionEl = document.createElement("option") as HTMLOptionElement;
             optionEl.classList.add("option");
             optionEl.text = option.subType;
+            if (option.subType === subType) {
+                optionEl.selected = true;
+            }
             optionEl.value = option.classificationId + "";
             selectbox.append(optionEl);
         })
@@ -370,25 +399,21 @@ async function setSelectOption(category?: string) {
 
 // 두동작이 
 function initModalButton(content: ContentDetail) {
-    mdIncome.addEventListener("click", () => {
+    mdIncome.onclick = () => {
         setSelectOption("I");
         mdIncome.style.border = "1px solid rgb(227,108,103)";
         mdIncome.style.color = "rgb(227,108,103)";
         mdExpenditure.style.removeProperty("border");
         mdExpenditure.style.removeProperty("color");
         mdIncome.setAttribute("data-category", "I");
-    });
+    };
 
-    mdExpenditure.addEventListener("click", () => {
+    mdExpenditure.onclick = () => {
         setSelectOption("E");
         mdExpenditure.style.border = "1px solid rgb(227,108,103)";
         mdExpenditure.style.color = "rgb(227,108,103)";
         mdIncome.style.removeProperty("border");
         mdIncome.style.removeProperty("color");
         mdIncome.setAttribute("data-category", "O");
-    });
-
-    btnCancel.addEventListener("click", () => {
-        modal.classList.add("hidden");
-    });
+    };
 }
