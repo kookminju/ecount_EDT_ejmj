@@ -1,7 +1,7 @@
 import "../css/index.css";
 import mainIcon from "../img/mainIcon.png";
-import { ContentDetail } from "./interface";
-import { loadContents } from "./store";
+import { ContentDetail } from "./util/interface";
+import { loadContents } from "./util/store";
 
 const btnPrevious = document.getElementById("btnPrevious") as HTMLButtonElement;
 const btnNext = document.getElementById("btnNext") as HTMLButtonElement;

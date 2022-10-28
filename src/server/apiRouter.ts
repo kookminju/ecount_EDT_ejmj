@@ -1,6 +1,6 @@
 import express from "express";
 import mysql from "mysql";
-import { Classification, Content, ContentDetail, Record } from "../client/interface";
+import { Classification, Content, ContentDetail, Record } from "../client/util/interface";
 
 const connection = mysql.createConnection({
     host: "localhost",
