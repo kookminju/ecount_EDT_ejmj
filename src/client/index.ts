@@ -3,7 +3,7 @@
 import "../css/index.css";
 import mainIcon from "../img/mainIcon.png";
 import { Content, ContentDetail } from "./util/interface";
-import { addAccountBookContent, getContentById, loadAllClassifications, loadContents, modifyAccountBookContent, removeAccountBookContent } from "./util/store";
+import { addAccountBookContent, getContentById, loadClassificationsByCategory, loadContents, modifyAccountBookContent, removeAccountBookContent } from "./util/store";
 import { btnPrevious, btnNext, dateEl, btnCurrent } from "./util/common";
 
 const btnTotal = document.getElementById("total") as HTMLDivElement;
