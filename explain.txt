@@ -23,5 +23,9 @@ npx tsc --init
 
 ----------------
 EJ 할일
-1. app.ts ContentDetail datetime 형식 변환해서 저장하기
+1. store 삼항연산자 쪽 중복되는거 지우기 (완)
+2. report랑 common 합치는거 왜안되는지 다시 체크 (완)
+3. public -> html + 이동 (report완)
+4. store에서 바로받지 말고 get으로 가져오기
+5. report렌더링... 개선하기...
 ----------------
