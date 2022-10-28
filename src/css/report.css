@@ -1,7 +1,25 @@
+.report-balance-wrapper {
+    background-color: #fff;
+    display: flex;
+    justify-content: center;
+    border-radius: 10px;
+    margin: 10px;
+    font-size: 18px;
+}
+
+.report-balance-wrapper > p {
+    margin: 10px;
+}
+
+#monthly-balance {
+    color: rgb(98 214 88);
+    font-weight: bold;
+}
+
 .report-wrapper {
     display: flex;
     align-items: flex-start;
-    padding: 10px 0;
+    padding: 0;
 }
 
 .report-wrapper table {

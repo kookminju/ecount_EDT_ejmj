@@ -51,6 +51,8 @@ function getMidSummarys(records: Record[]) {
 }
 
 function renderTotalSummary(mainSummary: TotalSummary, outTypeTableEl: HTMLTableElement, inTypeTableEl: HTMLTableElement) {
+    const balanceEl = document.querySelector("#monthly-balance") as HTMLParagraphElement
+    balanceEl.textContent = mainSummary.total.toLocaleString("ko-KR");
     function renderTableTop(targetTbl: HTMLTableElement, totalAmount: number) {
         const totalAmountEl = targetTbl.querySelector("thead .col-amount") as HTMLTableCellElement;
         totalAmountEl.textContent = totalAmount.toLocaleString();
