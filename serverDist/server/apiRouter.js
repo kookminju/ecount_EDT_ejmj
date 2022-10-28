@@ -171,7 +171,7 @@ exports.router.get("/classification/category/:category", (req, res) => {
 exports.router.get("/report/:yyyymm?", (req, res) => {
     try {
         const baseSql = "select c.*, amount_sum from classification c left join (select cf.*, sum(amount) as amount_sum from classification cf join content c on cf.classification_id = c.classification_id ";
-        const tailSql = " group by cf.sub_type) summary_cf on c.classification_id = summary_cf.classification_id order by category, main_type, sub_type ";
+        const tailSql = " group by cf.main_type, cf.sub_type) summary_cf on c.classification_id = summary_cf.classification_id order by category, main_type, sub_type ";
         let resultArr = [];
         if (!req.params.yyyymm) {
             const middleSql = " where date_format(content_date, '%m') = month(now())";

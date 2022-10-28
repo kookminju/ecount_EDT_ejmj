@@ -1,5 +1,8 @@
 use accountbook_ejmj;
 
+DROP TABLE IF EXISTS content;
+DROP TABLE IF EXISTS classification;
+
 create table classification (
 	classification_id int not null PRIMARY KEY,
     category char(1) not null,
@@ -46,43 +49,8 @@ values
 ('test-uuid-01', 1, now(), '10월급여받은거', 3000000),
 ('test-uuid-02', 9, now(), '구내식당', 6500),
 ('test-uuid-03', 9, date_sub(now(), interval 1 month), '샤브샤브', 12000),
-('test-uuid-04', 12, date_sub(now(), interval 1 month), '택시비', 6000)
+('test-uuid-04', 12, date_sub(now(), interval 1 month), '택시비', 6000),
+('test-uuid-05', 5, now(), '10월통신비', 99000),
+('test-uuid-06', 15, now(), '튼튼한 폰케이스', 57000)
 ;
 -- select * from content;
-
-
-
-
-select o.*, input
-from
-	(
-		select date_format(content_date, "%Y-%m-%d") as "yyyymmdd", sum(amount) output
-		from classification cf join content c on cf.classification_id = c.classification_id 
-		where category = "O" and date_format(content_date, "%Y-%m") = ?
-		group by date_format(content_date, "%Y-%m-%d")
-	) o
-    left join
-	(
-		select date_format(content_date, "%Y-%m-%d") as "yyyymmdd", sum(amount) input
-		from classification cf join content c on cf.classification_id = c.classification_id 
-		where category = "I" and date_format(content_date, "%Y-%m") = ?
-		group by date_format(content_date, "%Y-%m-%d")
-	) i
-    on o.yyyymmdd = i.yyyymmdd
-union
-select o.*, 수입
-from
-	(
-		select date_format(content_date, "%Y-%m-%d") as "yyyymmdd", sum(amount) output
-		from classification cf join content c on cf.classification_id = c.classification_id 
-		where category = "O" and date_format(content_date, "%Y-%m") = ?
-		group by date_format(content_date, "%Y-%m-%d")
-	) o
-	right join
-	(
-		select date_format(content_date, "%Y-%m-%d") as "yyyymmdd", sum(amount) input
-		from classification cf join content c on cf.classification_id = c.classification_id 
-		where category = "I" and date_format(content_date, "%Y-%m") = ?
-		group by date_format(content_date, "%Y-%m-%d")
-	) i
-    on o.yyyymmdd = i.yyyymmdd
