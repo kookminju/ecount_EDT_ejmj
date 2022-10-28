@@ -2,8 +2,8 @@
 
 import "../css/index.css";
 import mainIcon from "../img/mainIcon.png";
-import { Content, ContentDetail } from "./interface";
-import { addAccountBookContent, getContentById, loadAllClassifications, loadContents, modifyAccountBookContent, removeAccountBookContent } from "./store";
+import { Classification, Content, ContentDetail } from "./interface";
+import { addAccountBookContent, getContentById, loadAllClassifications, loadClassificationsByCategory, loadContents, modifyAccountBookContent, removeAccountBookContent } from "./store";
 import { btnPrevious, btnNext, dateEl, btnCurrent } from "./common";
 
 const btnTotal = document.getElementById("total") as HTMLDivElement;
@@ -172,12 +172,32 @@ function createListEl(content: ContentDetail) {
     divEl.append(amountEl);
     
     divEl.addEventListener("click", async() => {
-        openModal();
         let content: ContentDetail;
         if (divEl.dataset.id) {
             content = await getContentById(divEl.dataset.id);
-            
+
+            openModal(content);
             initModalButton(content);
+
+            mdIncome.addEventListener("click", () => {
+                content.category = "I";
+                setSelectOption("I");
+
+                mdIncome.style.border = "1px solid rgb(227,108,103)";
+                mdIncome.style.color = "rgb(227,108,103)";
+                mdExpenditure.style.removeProperty("border");
+                mdExpenditure.style.removeProperty("color");
+            })
+
+            mdExpenditure.addEventListener("click", () => {
+                content.category = "O";
+                setSelectOption("O");
+
+                mdExpenditure.style.border = "1px solid rgb(227,108,103)";
+                mdExpenditure.style.color = "rgb(227,108,103)";
+                mdIncome.style.removeProperty("border");
+                mdIncome.style.removeProperty("color");
+            })
 
             if (content.category == "I") {
                 mdIncome.style.border = "1px solid rgb(227,108,103)";
@@ -297,7 +317,13 @@ btnCreate.addEventListener("click", () => {
     }
 })
 
-function openModal() {
+function openModal(content?: ContentDetail) {
+    if (content) {
+        setSelectOption(content.category);
+    } else {
+        setSelectOption();
+    }
+    
     resetModal();
     modal.classList.remove("hidden");
 }
@@ -316,23 +342,36 @@ async function resetModal() {
     inputMemo.value = "";
 }
 
-function setSelectOption(content?: Content) {
-    if (content) {
-        // const options = await loadAllClassifications();
-        // options.forEach((option) => {
-        //     const optionEl = document.createElement("option") as HTMLOptionElement;
-        //     optionEl.text = option.subType;
-        //     optionEl.value = option.classificationId + "";
-        //     selectbox.append(optionEl);
-        // })
+// 모달 열때 (+버튼, 각 divEl 버튼 클릭 시)
+async function setSelectOption(category?: string) {
+    document.querySelectorAll(".option").forEach(el => {
+        if (!el.classList.contains("option_title")) { el.remove(); }
+    });
+    if (category) {
+        const options = await loadClassificationsByCategory(category);
+        options.forEach((option) => {
+            const optionEl = document.createElement("option") as HTMLOptionElement;
+            optionEl.classList.add("option");
+            optionEl.text = option.subType;
+            optionEl.value = option.classificationId + "";
+            selectbox.append(optionEl);
+        })
     } else {
-
+        const options = await loadClassificationsByCategory("I");
+        options.forEach((option) => {
+            const optionEl = document.createElement("option") as HTMLOptionElement;
+            optionEl.classList.add("option");
+            optionEl.text = option.subType;
+            optionEl.value = option.classificationId + "";
+            selectbox.append(optionEl);
+        })
     }
 }
 
 // 두동작이 
 function initModalButton(content: ContentDetail) {
     mdIncome.addEventListener("click", () => {
+        setSelectOption("I");
         mdIncome.style.border = "1px solid rgb(227,108,103)";
         mdIncome.style.color = "rgb(227,108,103)";
         mdExpenditure.style.removeProperty("border");
@@ -341,6 +380,7 @@ function initModalButton(content: ContentDetail) {
     });
 
     mdExpenditure.addEventListener("click", () => {
+        setSelectOption("E");
         mdExpenditure.style.border = "1px solid rgb(227,108,103)";
         mdExpenditure.style.color = "rgb(227,108,103)";
         mdIncome.style.removeProperty("border");
