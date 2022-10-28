@@ -34,7 +34,7 @@ module.exports = {
         new webpack.ProgressPlugin(),
         new HtmlWebpackPlugin({
             filename: "index.html",
-            template: "./public/index.html",
+            template: "./src/html/index.html",
             chunks: ["main"],
         }),
         new HtmlWebpackPlugin({
