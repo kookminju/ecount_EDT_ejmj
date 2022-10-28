@@ -6,7 +6,7 @@ module.exports = {
     mode: "none",
     entry: {
         main: "./src/client/index.ts",
-        report: [ "./src/client/common.ts", "./src/client/report.ts" ]
+        report: "./src/client/report.ts"
     },
     output: {
         filename: "[name].[contenthash].bundle.js",
@@ -39,7 +39,7 @@ module.exports = {
         }),
         new HtmlWebpackPlugin({
             filename: "report.html",
-            template: "./public/report.html",
+            template: "./src/html/report.html",
             chunks: ["report"],
         }),
     ],

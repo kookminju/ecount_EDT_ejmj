@@ -1,7 +1,9 @@
 import { Content, Classification, ContentDetail, Record } from "./interface";
 
 export async function loadContents(param?: string) {
-    let url: string = param ? `api/accountBook/${param}` : "api/accountBook";
+    let url: string = "api/accountBook";
+    if(param) { url += `/${param}`} 
+
     const response = await fetch(url);
     const contents: ContentDetail[] = await response.json();
     return contents;
@@ -48,9 +50,21 @@ export async function loadAllClassifications() {
     return classifications;
 }
 
+export async function loadClassificationsByCategory(category: string) {
+    const response = await fetch("api/classification/category/" + category);
+    const classifications: Classification[] = await response.json();
+    return classifications;
+}
+
 export async function loadRecords(param?: string) {
-    let url: string = param ? `api/report/${param}` : "api/report";
+    let url: string = "api/report";
+    if(param) { url += `/${param}`} 
+
     const response = await fetch(url);
     const records: Record[] = await response.json();
     return records;
+}
+
+function getAllContents() {
+    
 }
