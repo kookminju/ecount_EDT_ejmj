@@ -2,9 +2,9 @@
 
 import "../css/index.css";
 import mainIcon from "../img/mainIcon.png";
-import { Classification, Content, ContentDetail } from "./interface";
-import { addAccountBookContent, getContentById, loadAllClassifications, loadClassificationsByCategory, loadContents, modifyAccountBookContent, removeAccountBookContent } from "./store";
-import { btnPrevious, btnNext, dateEl, btnCurrent } from "./common";
+import { Content, ContentDetail } from "./util/interface";
+import { addAccountBookContent, getContentById, loadAllClassifications, loadContents, modifyAccountBookContent, removeAccountBookContent } from "./util/store";
+import { btnPrevious, btnNext, dateEl, btnCurrent } from "./util/common";
 
 const btnTotal = document.getElementById("total") as HTMLDivElement;
 const btnIncome = document.getElementById("income") as HTMLDivElement;

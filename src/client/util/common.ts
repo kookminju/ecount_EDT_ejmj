@@ -1,5 +1,5 @@
-import "../css/common.css";
-import mainIcon from "../img/mainIcon.png";
+import "../../css/common.css";
+import mainIcon from "../../img/mainIcon.png";
 
 export const btnPrevious = document.getElementById("btnPrevious") as HTMLButtonElement;
 export const btnNext = document.getElementById("btnNext") as HTMLButtonElement;

@@ -1,4 +1,4 @@
-import { Record } from "./interface";
+import { Record } from "../util/interface";
 
 export function renderReport(records: Record[]) {
     let outTypeArr: Record[] = [];

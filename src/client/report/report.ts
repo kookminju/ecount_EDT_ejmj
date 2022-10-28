@@ -1,8 +1,8 @@
-import "../css/report.css";
-import { btnNext, btnPrevious, dateEl, btnCurrent } from "./common";
-import { Record } from "./interface";
+import "../../css/report.css";
+import { btnNext, btnPrevious, dateEl, btnCurrent } from "../util/common";
+import { Record } from "../util/interface";
 import { renderReport } from "./reportRender";
-import { loadRecords } from "./store";
+import { getMonthlyRecords } from "../util/store";
 
 document.addEventListener('DOMContentLoaded', () => {
     loadReport();
@@ -13,6 +13,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function loadReport() {
     const date: string = dateEl.textContent ?? "";
-    const records: Record[] = await loadRecords(date);
+    const records: Record[] = await getMonthlyRecords(date);
     renderReport(records);
 }
