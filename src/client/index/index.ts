@@ -1,10 +1,7 @@
-// common.ts랑 합치고 중복 코드 리팩토링하기 (webpack.config.js)
-
 import "../css/index.css";
-import mainIcon from "../img/mainIcon.png";
-import { Content, ContentDetail } from "./util/interface";
-import { addAccountBookContent, getContentById, loadClassificationsByCategory, loadContents, modifyAccountBookContent, removeAccountBookContent } from "./util/store";
-import { btnPrevious, btnNext, dateEl, btnCurrent } from "./util/common";
+import { Content, ContentDetail } from "../util/interface";
+import { addAccountBookContent, getContentById, loadClassificationsByCategory, loadContents, modifyAccountBookContent, removeAccountBookContent } from "../util/store";
+import { btnPrevious, btnNext, dateEl, btnCurrent } from "../util/common";
 
 const btnTotal = document.getElementById("total") as HTMLDivElement;
 const btnIncome = document.getElementById("income") as HTMLDivElement;
