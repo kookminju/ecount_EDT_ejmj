@@ -2,13 +2,9 @@
 
 import "../css/index.css";
 import mainIcon from "../img/mainIcon.png";
-import { ContentDetail } from "./interface";
-import { getContentById, loadAllClassifications, loadContents } from "./store";
-
-const btnPrevious = document.getElementById("btnPrevious") as HTMLButtonElement;
-const btnNext = document.getElementById("btnNext") as HTMLButtonElement;
-const dateEl = document.getElementById("month") as HTMLDivElement;
-const btnCurrent = document.getElementById("current_month") as HTMLButtonElement;
+import { Content, ContentDetail } from "./interface";
+import { addAccountBookContent, getContentById, loadAllClassifications, loadContents, modifyAccountBookContent, removeAccountBookContent } from "./store";
+import { btnPrevious, btnNext, dateEl, btnCurrent } from "./common";
 
 const btnTotal = document.getElementById("total") as HTMLDivElement;
 const btnIncome = document.getElementById("income") as HTMLDivElement;
@@ -42,7 +38,7 @@ let date: string = "";
 
 window.addEventListener('DOMContentLoaded', async () => {
     const icon = document.getElementById("icon") as HTMLImageElement;
-    icon.src = mainIcon;
+    icon.src = mainIcon; 
     btnTotal.style.borderBottom = "3px solid rgb(227,108,103)";
 
     dateEl.textContent = getDate();
@@ -54,62 +50,58 @@ window.addEventListener('DOMContentLoaded', async () => {
 
     summarizeContents();
     createEliments(allContents);
+
+    
+
+    btnPrevious.addEventListener("click", async() => {
+        initSummaryStyle();
+    
+        date = dateEl.textContent ?? "";
+    
+        allContents = await loadContents(date);
+        incomeContents = allContents.filter(content => content.category === "I");
+        expenditureContents = allContents.filter(content => content.category === "O");
+    
+        summarizeContents();
+        createEliments(allContents);
+    });
+    
+    btnNext.addEventListener("click", async() => {
+        initSummaryStyle();
+    
+        date = dateEl.textContent ?? "";
+    
+        allContents = await loadContents(date);
+        incomeContents = allContents.filter(content => content.category === "I");
+        expenditureContents = allContents.filter(content => content.category === "O");
+    
+        summarizeContents();
+        createEliments(allContents);
+    });
+    
+    btnCurrent.addEventListener("click", async() => { 
+        initSummaryStyle();
+        
+        date = getDate();
+        dateEl.textContent = date;
+    
+        allContents = await loadContents(date);
+        incomeContents = allContents.filter(content => content.category === "I");
+        expenditureContents = allContents.filter(content => content.category === "O");
+    
+        summarizeContents();
+        createEliments(allContents);
+    });
 });
 
 
-btnPrevious.addEventListener("click", async() => {
+
+
+function initSummaryStyle() {
     btnIncome.style.removeProperty("border-bottom");
     btnExpenditure.style.removeProperty("border-bottom");
     btnTotal.style.borderBottom = "3px solid rgb(227,108,103)";
-
-    let [year, month]: string[] = date.split('-');
-    if (month === "01") {
-        date = (Number(year) - 1) + '-12';
-    } else {
-        date = year + '-' + ('0' + (Number(month) - 1)).slice(-2);
-    }
-    dateEl.textContent = date;
-
-    allContents = await loadContents(date);
-    incomeContents = allContents.filter(content => content.category === "I");
-    expenditureContents = allContents.filter(content => content.category === "O");
-
-    summarizeContents();
-    createEliments(allContents);
-});
-
-btnNext.addEventListener("click", async() => {
-    btnIncome.style.removeProperty("border-bottom");
-    btnExpenditure.style.removeProperty("border-bottom");
-    btnTotal.style.borderBottom = "3px solid rgb(227,108,103)";
-
-    let [year, month]: string[] = date.split('-');
-    if (month === "12") {
-        date = (Number(year) + 1) + '-01';
-    } else {
-        date = year + '-' + ('0' + (Number(month) + 1)).slice(-2);
-    }
-    dateEl.textContent = date;
-
-    allContents = await loadContents(date);
-    incomeContents = allContents.filter(content => content.category === "I");
-    expenditureContents = allContents.filter(content => content.category === "O");
-
-    summarizeContents();
-    createEliments(allContents);
-});
-
-btnCurrent.addEventListener("click", async() => { 
-    date = getDate();
-    dateEl.textContent = date;
-
-    allContents = await loadContents(date);
-    incomeContents = allContents.filter(content => content.category === "I");
-    expenditureContents = allContents.filter(content => content.category === "O");
-
-    summarizeContents();
-    createEliments(allContents);
-});
+}
 
 function getDate(): string {
     const date = new Date();
@@ -151,6 +143,7 @@ function createEliments(contents: ContentDetail[]) {
 function createListEl(content: ContentDetail) {
     const divEl = document.createElement("div") as HTMLDivElement;
     divEl.className = "content_history";
+    divEl.classList.add("li_content");
     divEl.setAttribute('data-id', content.contentId);
 
     const dateEl = document.createElement("div") as HTMLDivElement;
@@ -183,35 +176,68 @@ function createListEl(content: ContentDetail) {
         let content: ContentDetail;
         if (divEl.dataset.id) {
             content = await getContentById(divEl.dataset.id);
+            
+            initModalButton(content);
 
             if (content.category == "I") {
                 mdIncome.style.border = "1px solid rgb(227,108,103)";
                 mdIncome.style.color = "rgb(227,108,103)";
+                mdExpenditure.style.removeProperty("border");
+                mdExpenditure.style.removeProperty("color");
             } else {
                 mdExpenditure.style.border = "1px solid rgb(227,108,103)";
                 mdExpenditure.style.color = "rgb(227,108,103)";
+                mdIncome.style.removeProperty("border");
+                mdIncome.style.removeProperty("color");
             }
 
             const contentDate = content.contentDate.split(" ");
             inputDate.value = contentDate[0];
             inputTime.value = contentDate[1];
 
-            const options = await loadAllClassifications();
-            options.forEach((option) => {
-                const optionEl = document.createElement("option") as HTMLOptionElement;
-                optionEl.text = option.subType;
-                optionEl.value = option.classificationId + "";
-                selectbox.append(optionEl);
-            })
             selectbox.value = content.classificationId + "";
 
             inputAmount.value = content.amount + "";
 
             inputMemo.value = content.memo;
+
+            // put content
+            btnSave.onclick = () => {
+                // value로 새로 변경할 content를 채우자
+                const newContent: Content = {
+                    contentId: content.contentId,
+                    classificationId: +selectbox.value,
+                    contentDate: inputDate.value + " " + inputTime.value,
+                    memo: inputMemo.value,
+                    amount: +inputAmount.value,
+                };
+                modifyAccountBookContent(newContent);
+                modal.classList.add("hidden");
+                refreshContents(date);
+            }
+
+            btnDelete.onclick = () => {
+                alert("삭제할게요 ~!");
+                // 현재 content 삭제
+                removeAccountBookContent(content.contentId);
+                modal.classList.add("hidden");
+                refreshContents(date);
+            }
         }
     })
 
     contentEl.append(divEl);
+}
+
+async function refreshContents(date: string) {
+    btnTotal.style.borderBottom = "3px solid rgb(227,108,103)";
+
+    allContents = await loadContents(date);
+    incomeContents = allContents.filter(content => content.category === "I");
+    expenditureContents = allContents.filter(content => content.category === "O");
+
+    summarizeContents();
+    createEliments(allContents);
 }
 
 btnTotal.addEventListener("click", () => {
@@ -247,11 +273,28 @@ const btnCancel = document.getElementById("btnCancel") as HTMLButtonElement;
 
 btnCreate.addEventListener("click", () => {
     openModal();
-})
 
-btnCancel.addEventListener("click", () => {
-    modal.classList.add("hidden");
+    // post content
+    btnSave.onclick = () => {
+        if (!selectbox.value || !inputDate.value || !inputTime.value || !inputMemo.value || !inputAmount.value) {
+            alert("input값을 모두 채워주세요 !")
+            return;
+        }
+        const newContent: Content = {
+            contentId: crypto.randomUUID(),
+            classificationId: +selectbox.value,
+            contentDate: inputDate.value + " " +inputTime.value + ":00",
+            memo: inputMemo.value,
+            amount: +inputAmount.value,
+        };
+        addAccountBookContent(newContent);
+        modal.classList.add("hidden");
+        refreshContents(date);
+    }
 
+    btnDelete.onclick = () => {
+        alert("삭제할 항목을 클릭해주세요");
+    }
 })
 
 function openModal() {
@@ -259,14 +302,53 @@ function openModal() {
     modal.classList.remove("hidden");
 }
 
-function resetModal() {
+async function resetModal() {
+    mdIncome.setAttribute("data-category", "I");
+
     mdIncome.style.border = "1px solid rgb(227,108,103)";
     mdIncome.style.color = "rgb(227,108,103)";
     mdExpenditure.style.removeProperty("border");
     mdExpenditure.style.removeProperty("color");
-    inputDate.value = "YYYY-MM";
-    inputTime.value = "hh-mm-ss";
+    inputDate.value = "";
+    inputTime.value = "";
     selectbox.value = "none";
     inputAmount.value = "";
     inputMemo.value = "";
+}
+
+function setSelectOption(content?: Content) {
+    if (content) {
+        // const options = await loadAllClassifications();
+        // options.forEach((option) => {
+        //     const optionEl = document.createElement("option") as HTMLOptionElement;
+        //     optionEl.text = option.subType;
+        //     optionEl.value = option.classificationId + "";
+        //     selectbox.append(optionEl);
+        // })
+    } else {
+
+    }
+}
+
+// 두동작이 
+function initModalButton(content: ContentDetail) {
+    mdIncome.addEventListener("click", () => {
+        mdIncome.style.border = "1px solid rgb(227,108,103)";
+        mdIncome.style.color = "rgb(227,108,103)";
+        mdExpenditure.style.removeProperty("border");
+        mdExpenditure.style.removeProperty("color");
+        mdIncome.setAttribute("data-category", "I");
+    });
+
+    mdExpenditure.addEventListener("click", () => {
+        mdExpenditure.style.border = "1px solid rgb(227,108,103)";
+        mdExpenditure.style.color = "rgb(227,108,103)";
+        mdIncome.style.removeProperty("border");
+        mdIncome.style.removeProperty("color");
+        mdIncome.setAttribute("data-category", "O");
+    });
+
+    btnCancel.addEventListener("click", () => {
+        modal.classList.add("hidden");
+    });
 }
