@@ -1,5 +1,6 @@
 import { Content, ContentDetail } from "../util/interface";
 import { addAccountBookContent, loadClassificationsByCategory, modifyAccountBookContent, removeAccountBookContent } from "../util/store";
+import { refreshContents } from "./eliment";
 
 const modal = document.querySelector(".modal") as HTMLDivElement;
 const mdIncome = document.getElementById("md_income") as HTMLButtonElement;
@@ -29,8 +30,7 @@ export function openModal(content?: ContentDetail) {
 
 function resetModal() {
     initCommonButton();
-    inputDate.value, inputTime.value, inputAmount.value, inputMemo.value= "";
-    selectbox.value = "none";
+    [inputDate.value, inputTime.value, inputAmount.value, inputMemo.value, selectbox.value] = ["", "", "", "", "none"];
 }
 
 async function setSelectOption(category: string, subType?: string) {
@@ -88,7 +88,7 @@ function initButtonForCreate() {
         }
         saveContent();
         modal.classList.add("hidden");
-        // refreshContents(date);
+        refreshContents();
     };
 
     btnDelete.onclick = () => {
@@ -104,14 +104,14 @@ function initButtonForModify(content: ContentDetail) {
         }
         updateContent(content);
         modal.classList.add("hidden");
-        // refreshContents(date);
+        refreshContents();
     }
     
     btnDelete.onclick = () => {
         alert("삭제할게요 ~!");
         removeAccountBookContent(content.contentId);
         modal.classList.add("hidden");
-        // refreshContents(date);
+        refreshContents();
     }
 }
 

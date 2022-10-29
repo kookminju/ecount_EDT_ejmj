@@ -9,7 +9,7 @@ export const btnCurrent = document.getElementById("current_month") as HTMLButton
 document.addEventListener('DOMContentLoaded', () => {
     const icon = document.getElementById("icon") as HTMLImageElement;
     icon.src = mainIcon;
-    dateEl.textContent = getDate();
+    dateEl.textContent = getCurrentMonth();
     calendarClick();
 });
 
@@ -37,11 +37,11 @@ function calendarClick() {
     });
     
     btnCurrent.addEventListener("click", () => { 
-        dateEl.textContent = getDate();
+        dateEl.textContent = getCurrentMonth();
     });
 }
 
-function getDate(): string {
+function getCurrentMonth(): string {
     const date = new Date();
     const year: number = date.getFullYear();
     const month: string = ('0' + (date.getMonth() + 1)).slice(-2);
