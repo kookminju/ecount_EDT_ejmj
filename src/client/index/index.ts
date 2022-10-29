@@ -1,7 +1,8 @@
 import "../../css/index.css";
-import { Content, ContentDetail } from "../util/interface";
-import { addAccountBookContent, getContentById, loadClassificationsByCategory, loadContents, modifyAccountBookContent, removeAccountBookContent } from "../util/store";
+import { ContentDetail } from "../util/interface";
+import { getContentById, loadContents } from "../util/store";
 import { btnPrevious, btnNext, dateEl, btnCurrent } from "../util/common";
+import { openModal } from "./modal";
 
 const btnTotal = document.getElementById("total") as HTMLDivElement;
 const btnIncome = document.getElementById("income") as HTMLDivElement;
@@ -17,15 +18,7 @@ const sumTotal = document.getElementById("sumTotal") as HTMLSpanElement;
 const sumIncome = document.getElementById("sumIncome") as HTMLSpanElement;
 const sumExpenditure = document.getElementById("sumExpenditure") as HTMLSpanElement;
 
-const modal = document.querySelector(".modal") as HTMLDivElement;
-const mdIncome = document.getElementById("md_income") as HTMLButtonElement;
-const mdExpenditure = document.getElementById("md_expenditure") as HTMLButtonElement;
-const inputDate = document.getElementById("inputDate") as HTMLInputElement;
-const inputTime = document.getElementById("inputTime") as HTMLInputElement;
-const selectbox = document.getElementById("category") as HTMLSelectElement;
-const inputAmount = document.getElementById("inputAmount") as HTMLInputElement;
-const inputMemo = document.getElementById("inputMemo") as HTMLInputElement;
-
+const btnCreate = document.getElementById("btnCreate") as HTMLButtonElement;
 
 let allContents: ContentDetail[];
 let incomeContents: ContentDetail[];
@@ -44,8 +37,6 @@ window.addEventListener('DOMContentLoaded', async () => {
 
     summarizeContents();
     createEliments(allContents);
-
-    
 
     btnPrevious.addEventListener("click", async() => {
         initSummaryStyle();
@@ -87,9 +78,6 @@ window.addEventListener('DOMContentLoaded', async () => {
         createEliments(allContents);
     });
 });
-
-
-
 
 function initSummaryStyle() {
     btnIncome.style.removeProperty("border-bottom");
@@ -169,95 +157,11 @@ function createListEl(content: ContentDetail) {
         let content: ContentDetail;
         if (divEl.dataset.id) {
             content = await getContentById(divEl.dataset.id);
-
             openModal(content);
-            initModalButton(content);
-
-            mdIncome.onclick = () => {
-                content.category = "I";
-                setSelectOption("I");
-
-                mdIncome.style.border = "1px solid rgb(227,108,103)";
-                mdIncome.style.color = "rgb(227,108,103)";
-                mdExpenditure.style.removeProperty("border");
-                mdExpenditure.style.removeProperty("color");
-            }
-
-            mdExpenditure.onclick = () => {
-                content.category = "O";
-                setSelectOption("O");
-
-                mdExpenditure.style.border = "1px solid rgb(227,108,103)";
-                mdExpenditure.style.color = "rgb(227,108,103)";
-                mdIncome.style.removeProperty("border");
-                mdIncome.style.removeProperty("color");
-            }
-
-            if (content.category == "I") {
-                mdIncome.style.border = "1px solid rgb(227,108,103)";
-                mdIncome.style.color = "rgb(227,108,103)";
-                mdExpenditure.style.removeProperty("border");
-                mdExpenditure.style.removeProperty("color");
-            } else {
-                mdExpenditure.style.border = "1px solid rgb(227,108,103)";
-                mdExpenditure.style.color = "rgb(227,108,103)";
-                mdIncome.style.removeProperty("border");
-                mdIncome.style.removeProperty("color");
-            }
-
-            const contentDate = content.contentDate.split(" ");
-            inputDate.value = contentDate[0];
-            inputTime.value = contentDate[1];
-
-            inputAmount.value = content.amount + "";
-
-            inputMemo.value = content.memo;
-
-            // put content
-            btnSave.onclick = () => {
-                if (selectbox.value == "none" || !inputDate.value || !inputTime.value || !inputMemo.value || !inputAmount.value) {
-                    alert("input값을 모두 채워주세요 !")
-                    return;
-                }
-                // value로 새로 변경할 content를 채우자
-                const newContent: Content = {
-                    contentId: content.contentId,
-                    classificationId: +selectbox.value,
-                    contentDate: inputDate.value + " " + inputTime.value,
-                    memo: inputMemo.value,
-                    amount: +inputAmount.value,
-                };
-                modifyAccountBookContent(newContent);
-                modal.classList.add("hidden");
-                refreshContents(date);
-            }
-
-            btnDelete.onclick = () => {
-                alert("삭제할게요 ~!");
-                // 현재 content 삭제
-                removeAccountBookContent(content.contentId);
-                modal.classList.add("hidden");
-                refreshContents(date);
-            }
-
-            btnCancel.onclick = () => {
-                modal.classList.add("hidden");
-            };
         }
     })
 
     contentEl.append(divEl);
-}
-
-async function refreshContents(date: string) {
-    btnTotal.style.borderBottom = "3px solid rgb(227,108,103)";
-
-    allContents = await loadContents(date);
-    incomeContents = allContents.filter(content => content.category === "I");
-    expenditureContents = allContents.filter(content => content.category === "O");
-
-    summarizeContents();
-    createEliments(allContents);
 }
 
 btnTotal.addEventListener("click", () => {
@@ -285,132 +189,4 @@ function changeNotation(amount: Number) {
     return String(amount).replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
 }
 
-// 모달
-const btnCreate = document.getElementById("btnCreate") as HTMLButtonElement;
-const btnSave = document.getElementById("btnSave") as HTMLButtonElement;
-const btnDelete = document.getElementById("btnDelete") as HTMLButtonElement;
-const btnCancel = document.getElementById("btnCancel") as HTMLButtonElement;
-
-btnCreate.addEventListener("click", () => {
-    openModal();
-
-    mdIncome.onclick = () => {
-        setSelectOption("I");
-
-        mdIncome.style.border = "1px solid rgb(227,108,103)";
-        mdIncome.style.color = "rgb(227,108,103)";
-        mdExpenditure.style.removeProperty("border");
-        mdExpenditure.style.removeProperty("color");
-    }
-
-    mdExpenditure.onclick = () => {
-        setSelectOption("O");
-
-        mdExpenditure.style.border = "1px solid rgb(227,108,103)";
-        mdExpenditure.style.color = "rgb(227,108,103)";
-        mdIncome.style.removeProperty("border");
-        mdIncome.style.removeProperty("color");
-    }
-
-    // post content
-    btnSave.onclick = () => {
-        if (selectbox.value == "none"  || !inputDate.value || !inputTime.value || !inputMemo.value || !inputAmount.value) {
-            alert("input값을 모두 채워주세요 !")
-            return;
-        }
-        const newContent: Content = {
-            contentId: crypto.randomUUID(),
-            classificationId: +selectbox.value,
-            contentDate: inputDate.value + " " +inputTime.value + ":00",
-            memo: inputMemo.value,
-            amount: +inputAmount.value,
-        };
-        addAccountBookContent(newContent);
-        modal.classList.add("hidden");
-        refreshContents(date);
-    }
-
-    btnDelete.onclick = () => {
-        alert("삭제할 항목을 클릭해주세요");
-    }
-
-    btnCancel.onclick = () => {
-        modal.classList.add("hidden");
-    };
-})
-
-function openModal(content?: ContentDetail) {
-    resetModal();
-
-    if (content) {
-        setSelectOption(content.category, content.subType);
-    } else {
-        setSelectOption();
-    }
-
-    modal.classList.remove("hidden");
-}
-
-async function resetModal() {
-    mdIncome.setAttribute("data-category", "I");
-
-    mdIncome.style.border = "1px solid rgb(227,108,103)";
-    mdIncome.style.color = "rgb(227,108,103)";
-    mdExpenditure.style.removeProperty("border");
-    mdExpenditure.style.removeProperty("color");
-    inputDate.value = "";
-    inputTime.value = "";
-    selectbox.value = "none";
-    inputAmount.value = "";
-    inputMemo.value = "";
-}
-
-// 모달 열때 (+버튼, 각 divEl 버튼 클릭 시)
-async function setSelectOption(category?: string, subType?: string) {
-    document.querySelectorAll(".option").forEach(el => {
-        if (!el.classList.contains("option_title")) { el.remove(); }
-    });
-    if (category) {
-        const options = await loadClassificationsByCategory(category);
-        options.forEach((option) => {
-            const optionEl = document.createElement("option") as HTMLOptionElement;
-            optionEl.classList.add("option");
-            optionEl.text = option.subType;
-            if (option.subType === subType) {
-                optionEl.selected = true;
-            }
-            optionEl.value = option.classificationId + "";
-            selectbox.append(optionEl);
-        })
-    } else {
-        const options = await loadClassificationsByCategory("I");
-        options.forEach((option) => {
-            const optionEl = document.createElement("option") as HTMLOptionElement;
-            optionEl.classList.add("option");
-            optionEl.text = option.subType;
-            optionEl.value = option.classificationId + "";
-            selectbox.append(optionEl);
-        })
-    }
-}
-
-// 두동작이 
-function initModalButton(content: ContentDetail) {
-    mdIncome.onclick = () => {
-        setSelectOption("I");
-        mdIncome.style.border = "1px solid rgb(227,108,103)";
-        mdIncome.style.color = "rgb(227,108,103)";
-        mdExpenditure.style.removeProperty("border");
-        mdExpenditure.style.removeProperty("color");
-        mdIncome.setAttribute("data-category", "I");
-    };
-
-    mdExpenditure.onclick = () => {
-        setSelectOption("E");
-        mdExpenditure.style.border = "1px solid rgb(227,108,103)";
-        mdExpenditure.style.color = "rgb(227,108,103)";
-        mdIncome.style.removeProperty("border");
-        mdIncome.style.removeProperty("color");
-        mdIncome.setAttribute("data-category", "O");
-    };
-}
+btnCreate.addEventListener("click", () => openModal());
