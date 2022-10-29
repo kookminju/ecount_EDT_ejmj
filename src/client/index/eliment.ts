@@ -1,22 +1,13 @@
-import { dateEl } from "../util/common";
 import { ContentDetail } from "../util/interface";
-import { getContentById, loadContents } from "../util/store";
+import { getContentById } from "../util/store";
 import { openModal } from "./modal";
-import { initSummaryStyle, summarizeContents } from "./summary";
 
 const contentEl = document.querySelector(".content") as HTMLDivElement;
-
-let allContents: ContentDetail[];
-let incomeContents: ContentDetail[];
-let expenditureContents: ContentDetail[];
-
-let date: string = "";
 
 export function createEliments(contents: ContentDetail[]) {
     document.querySelectorAll(".content_history").forEach(el => {
         if (!el.classList.contains("li_title")) { el.remove(); }
     });
-
     contents.forEach(content => {
         createListEl(content);
     });
@@ -62,16 +53,4 @@ function createListEl(content: ContentDetail) {
     })
 
     contentEl.append(divEl);
-}
-
-export async function refreshContents() {
-    initSummaryStyle();
-    date = dateEl.textContent ?? "";
-
-    allContents = await loadContents(date);
-    incomeContents = allContents.filter(content => content.category === "I");
-    expenditureContents = allContents.filter(content => content.category === "O");
-
-    summarizeContents(allContents, incomeContents, expenditureContents);
-    createEliments(allContents);
 }

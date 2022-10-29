@@ -1,7 +1,7 @@
 import "../../css/index.css";
 import { btnPrevious, btnNext, btnCurrent } from "../util/common";
 import { openModal } from "./modal";
-import { refreshContents } from "./eliment";
+import { refreshContents } from "./summary";
 
 const btnCreate = document.getElementById("btnCreate") as HTMLButtonElement;
 

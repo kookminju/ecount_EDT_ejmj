@@ -1,6 +1,6 @@
 import { Content, ContentDetail } from "../util/interface";
-import { addAccountBookContent, loadClassificationsByCategory, modifyAccountBookContent, removeAccountBookContent } from "../util/store";
-import { refreshContents } from "./eliment";
+import { addAccountBookContent, getClassificationsByCategory, modifyAccountBookContent, removeAccountBookContent } from "../util/store";
+import { refreshContents } from "./summary";
 
 const modal = document.querySelector(".modal") as HTMLDivElement;
 const mdIncome = document.getElementById("md_income") as HTMLButtonElement;
@@ -20,10 +20,10 @@ export function openModal(content?: ContentDetail) {
     if (content) {
         setSelectOption(content.category, content.subType);
         loadContentData(content);
-        initButtonForModify(content);
+        initMDButtonEvent(content);
     } else {
         setSelectOption("I");
-        initButtonForCreate();
+        initMDButtonEvent();
     }
     modal.classList.remove("hidden");
 }
@@ -38,7 +38,7 @@ async function setSelectOption(category: string, subType?: string) {
         if (!el.classList.contains("option_title")) { el.remove(); }
     });
 
-    const options = await loadClassificationsByCategory(category);
+    const options = await getClassificationsByCategory(category);
     options.forEach((option) => {
         const optionEl = document.createElement("option") as HTMLOptionElement;
         optionEl.classList.add("option");
@@ -54,25 +54,16 @@ async function setSelectOption(category: string, subType?: string) {
 }
 
 function initCommonButton() {
-    mdIncome.style.border = "1px solid rgb(227,108,103)";
-    mdIncome.style.color = "rgb(227,108,103)";
-    mdExpenditure.style.removeProperty("border");
-    mdExpenditure.style.removeProperty("color");
+    setIEButtonStyle(mdIncome);
 
     mdIncome.onclick = () => {
         setSelectOption("I");
-        mdIncome.style.border = "1px solid rgb(227,108,103)";
-        mdIncome.style.color = "rgb(227,108,103)";
-        mdExpenditure.style.removeProperty("border");
-        mdExpenditure.style.removeProperty("color");
+        setIEButtonStyle(mdIncome);
     };
 
     mdExpenditure.onclick = () => {
         setSelectOption("O");
-        mdExpenditure.style.border = "1px solid rgb(227,108,103)";
-        mdExpenditure.style.color = "rgb(227,108,103)";
-        mdIncome.style.removeProperty("border");
-        mdIncome.style.removeProperty("color");
+        setIEButtonStyle(mdExpenditure);
     };
 
     btnCancel.onclick = () => {
@@ -80,38 +71,46 @@ function initCommonButton() {
     };
 }
 
-function initButtonForCreate() {
-    btnSave.onclick = () => {
-        if (selectbox.value == "none" || !inputDate.value || !inputTime.value || !inputMemo.value || !inputAmount.value) {
-            alert("input값을 모두 채워주세요 !")
-            return;
+function setIEButtonStyle(btn: HTMLButtonElement) {
+    document.querySelectorAll(".IE").forEach((el) => {
+        const buttonEl = el as HTMLButtonElement;
+        if (buttonEl === btn) {
+            buttonEl.style.border = "1px solid rgb(227,108,103)";
+            buttonEl.style.color = "rgb(227,108,103)";
+        } else { 
+            buttonEl.style.removeProperty("border");
+            buttonEl.style.removeProperty("color");
         }
-        saveContent();
-        modal.classList.add("hidden");
-        refreshContents();
-    };
-
-    btnDelete.onclick = () => {
-        alert("삭제할 항목을 클릭해주세요");
-    }
+    })
 }
 
-function initButtonForModify(content: ContentDetail) {
+function loadContentData(content: ContentDetail) {
+    const contentDate = content.contentDate.split(" ");
+    inputDate.value = contentDate[0];
+    inputTime.value = contentDate[1];
+    inputAmount.value = content.amount + "";
+    inputMemo.value = content.memo;
+}
+
+function initMDButtonEvent(content?: ContentDetail) {
     btnSave.onclick = () => {
         if (selectbox.value == "none" || !inputDate.value || !inputTime.value || !inputMemo.value || !inputAmount.value) {
             alert("input값을 모두 채워주세요 !")
             return;
         }
-        updateContent(content);
+        if (!content) { saveContent(); } 
+        else { updateContent(content); }
         modal.classList.add("hidden");
         refreshContents();
     }
     
     btnDelete.onclick = () => {
-        alert("삭제할게요 ~!");
-        removeAccountBookContent(content.contentId);
-        modal.classList.add("hidden");
-        refreshContents();
+        if (content) {
+            alert("삭제할게요 ~!");
+            removeAccountBookContent(content.contentId);
+            modal.classList.add("hidden");
+            refreshContents();
+        } else { alert("삭제할 항목을 클릭해주세요"); }
     }
 }
 
@@ -135,12 +134,4 @@ function updateContent(content: ContentDetail) {
         amount: +inputAmount.value,
     };
     modifyAccountBookContent(newContent);
-}
-
-function loadContentData(content: ContentDetail) {
-    const contentDate = content.contentDate.split(" ");
-    inputDate.value = contentDate[0];
-    inputTime.value = contentDate[1];
-    inputAmount.value = content.amount + "";
-    inputMemo.value = content.memo;
 }
