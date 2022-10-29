@@ -1,4 +1,4 @@
-import "../css/index.css";
+import "../../css/index.css";
 import { Content, ContentDetail } from "../util/interface";
 import { addAccountBookContent, getContentById, loadClassificationsByCategory, loadContents, modifyAccountBookContent, removeAccountBookContent } from "../util/store";
 import { btnPrevious, btnNext, dateEl, btnCurrent } from "../util/common";
