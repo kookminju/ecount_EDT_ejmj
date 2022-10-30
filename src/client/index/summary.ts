@@ -19,6 +19,16 @@ let expenditureContents: ContentDetail[];
 
 let date: string = "";
 
+export async function refreshContents() {
+    setButtonStyle(btnTotal);
+
+    date = dateEl.textContent ?? "";
+    [ allContents, incomeContents, expenditureContents ] = await getMonthlyContents(date);
+
+    summarizeContents(allContents, incomeContents, expenditureContents);
+    createEliments(allContents);
+}
+
 function summarizeContents(all: ContentDetail[], income: ContentDetail[], expenditure: ContentDetail[]) {
     initButtonEvent(all, income, expenditure);
 
@@ -64,14 +74,4 @@ function setButtonStyle(btn: HTMLDivElement) {
         if (categoryEl === btn) { categoryEl.style.borderBottom = "3px solid rgb(227,108,103)"; }
         else { categoryEl.style.removeProperty("border-bottom"); }
     })
-}
-
-export async function refreshContents() {
-    setButtonStyle(btnTotal);
-
-    date = dateEl.textContent ?? "";
-    [ allContents, incomeContents, expenditureContents ] = await getMonthlyContents(date);
-
-    summarizeContents(allContents, incomeContents, expenditureContents);
-    createEliments(allContents);
 }
