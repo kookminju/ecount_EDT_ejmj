@@ -19,7 +19,7 @@ let expenditureContents: ContentDetail[];
 
 let date: string = "";
 
-export function summarizeContents(all: ContentDetail[], income: ContentDetail[], expenditure: ContentDetail[]) {
+function summarizeContents(all: ContentDetail[], income: ContentDetail[], expenditure: ContentDetail[]) {
     initButtonEvent(all, income, expenditure);
 
     cntTotal.textContent = all.length + "";
