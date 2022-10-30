@@ -26,6 +26,7 @@ interface TotalSummary {
     total: number;
 }
 
+// return { 총수입, 총지출, 총단기순손익 }
 function getTotalSummary(records: Record[]): TotalSummary {
     let inputAmount: number = 0;
     let outputAmount: number = 0;
@@ -41,7 +42,8 @@ function getTotalSummary(records: Record[]): TotalSummary {
     return { inputAmount, outputAmount, total: (inputAmount - outputAmount) }
 }
 
-function getMidSummarys(records: Record[]) {
+// return Map<대분류명, 누적금액>
+function getMidSummarys(records: Record[]): Map<string, number> {
     const mainTypeMap: Map<string, number> = new Map<string, number>();
     for(let record of records) {
         const orgAmount = mainTypeMap.get(record.mainType) ?? 0;
