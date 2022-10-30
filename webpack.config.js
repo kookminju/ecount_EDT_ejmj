@@ -6,7 +6,7 @@ module.exports = {
     mode: "none",
     devtool: "source-map",
     entry: {
-        main: "./src/client/index.ts",
+        main: "./src/client/index/index.ts",
         report: "./src/client/report/report.ts"
     },
     output: {

@@ -127,24 +127,6 @@ exports.router.delete("/accountBook/:contentId", (req, res) => {
         res.sendStatus(500);
     }
 });
-exports.router.get("/classification", (req, res) => {
-    try {
-        connection.query("select * from classification order by category, main_type, sub_type", (err, rows) => {
-            if (err) {
-                throw err;
-            }
-            let resultArr = [];
-            rows.forEach((row) => {
-                const classification = classificationHandler(row);
-                resultArr.push(classification);
-            });
-            res.send(resultArr);
-        });
-    }
-    catch (err) {
-        res.sendStatus(500);
-    }
-});
 exports.router.get("/classification/category/:category", (req, res) => {
     try {
         if (!req.params.category) {

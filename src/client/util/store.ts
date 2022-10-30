@@ -2,8 +2,10 @@ import { Content, Classification, ContentDetail, Record } from "./interface";
 
 
 export async function getMonthlyContents(params?: string) {
-    const contents: ContentDetail[] = await loadContents(params);
-    return contents;
+    const allContents: ContentDetail[] = await loadContents(params);
+    const incomeContents = allContents.filter(content => content.category === "I");
+    const expenditureContents = allContents.filter(content => content.category === "O");
+    return [allContents, incomeContents, expenditureContents];
 }
 
 export async function getContentById(contentId: string) {
@@ -16,18 +18,12 @@ export async function getMonthlyRecords(param?: string) {
     return records;
 }
 
-export async function getAllClassifications() {
-    const classifications: Classification[] = await loadAllClassifications()
-    return classifications;
-}
-
 export async function getClassificationsByCategory(category: string) {
     const classifications: Classification[] = await loadClassificationsByCategory(category);
     return classifications;
 }
 
-// export 빼기
-export async function loadContents(param?: string) {
+async function loadContents(param?: string) {
     let url: string = "api/accountBook";
     if(param) { url += `/${param}`} 
 
@@ -36,8 +32,7 @@ export async function loadContents(param?: string) {
     return contents;
 }
 
-// export 빼기
-export async function loadContentById(contentId: string) {
+async function loadContentById(contentId: string) {
     const response = await fetch("api/contentDetail/" + contentId);
     const content: ContentDetail = await response.json();
     return content;
@@ -72,15 +67,7 @@ export async function removeAccountBookContent(contentId: string) {
     return response.status;
 }
 
-// export 빼기
-export async function loadAllClassifications() {
-    const response = await fetch("api/classification");
-    const classifications: Classification[] = await response.json();
-    return classifications;
-}
-
-// export 빼기
-export async function loadClassificationsByCategory(category: string) {
+async function loadClassificationsByCategory(category: string) {
     const response = await fetch("api/classification/category/" + category);
     const classifications: Classification[] = await response.json();
     return classifications;
