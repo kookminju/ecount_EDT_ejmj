@@ -31,6 +31,7 @@ export function openModal(content?: ContentDetail) {
 
 function resetModal(content?: ContentDetail) {
     if (content) { initCommonButton(content); }
+    else {initCommonButton(); }
     [inputDate.value, inputTime.value, inputAmount.value, inputMemo.value, selectbox.value] = ["", "", "", "", "none"];
 }
 
