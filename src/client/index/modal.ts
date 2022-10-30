@@ -16,20 +16,21 @@ const btnDelete = document.getElementById("btnDelete") as HTMLButtonElement;
 const btnCancel = document.getElementById("btnCancel") as HTMLButtonElement;
 
 export function openModal(content?: ContentDetail) {
-    resetModal();
     if (content) {
+        resetModal(content);
         setSelectOption(content.category, content.subType);
         loadContentData(content);
         initMDButtonEvent(content);
     } else {
+        resetModal();
         setSelectOption("I");
         initMDButtonEvent();
     }
     modal.classList.remove("hidden");
 }
 
-function resetModal() {
-    initCommonButton();
+function resetModal(content?: ContentDetail) {
+    if (content) { initCommonButton(content); }
     [inputDate.value, inputTime.value, inputAmount.value, inputMemo.value, selectbox.value] = ["", "", "", "", "none"];
 }
 
@@ -53,8 +54,9 @@ async function setSelectOption(category: string, subType?: string) {
     })   
 }
 
-function initCommonButton() {
-    setIEButtonStyle(mdIncome);
+function initCommonButton(content?: ContentDetail) {
+    if (content && content?.category === "I") { setIEButtonStyle(mdIncome) }
+    else {setIEButtonStyle(mdExpenditure) };
 
     mdIncome.onclick = () => {
         setSelectOption("I");
