@@ -57,7 +57,8 @@ async function setSelectOption(category: string, subType?: string) {
 
 function initCommonButton(content?: ContentDetail) {
     if (content && content?.category === "I") { setIEButtonStyle(mdIncome) }
-    else {setIEButtonStyle(mdExpenditure) };
+    else if (content && content?.category === "O") {setIEButtonStyle(mdExpenditure) }
+    else {setIEButtonStyle(mdIncome) };
 
     mdIncome.onclick = () => {
         setSelectOption("I");
